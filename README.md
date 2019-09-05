@@ -182,8 +182,8 @@ ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
    ```
 	mvn package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
    ```
-
-	**Note:** You will use the api key in the file we created at the end of the [Configure IBM Cloud](#configure-ibm-cloud)
+	**Note:** If you are getting an issue where adoptopenjdk/openjdk8-openj9:alpine-slim is not being pulled run `docker pull adoptopenjdk/openjdk8-openj9:alpine-slim` first before the above command. 
+	**Note:** You will use the api key in the file we created at the end of the [Configure IBM Cloud](#configure-ibm-cloud). Be sure to use the value **iampikey** for the username.
 
    You should see output that looks like the following near the end of the build execution:
 
