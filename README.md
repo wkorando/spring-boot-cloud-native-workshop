@@ -10,12 +10,8 @@ In the first exercise we will quickly deploy a Spring Boot application to a Kube
 
 ## Connecting to a Database
 
-In the second exericse we will connec the Spring Boot application we built in the first exercise to a database: [Code](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database)
+In the second exericse we will connect the Spring Boot application we built in the first exercise to a database: [Code](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database)
 
-## Setting up a Deployment Pipeline
+## Cloud Native Integration Teting
 
-In this article we look at how to setup a deployment pipeline for the Spring Boot application we have been working on throughout the series. 
-
-Article (in progress)
-
-Code (in progress)
+In the second exericse we will use TestContainers and Spring Cloud Contract to handle test the Integration Testing of our Spring Boot application so that it is reliable and portable: [Code](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/3-cloud-native-integration-testing)
