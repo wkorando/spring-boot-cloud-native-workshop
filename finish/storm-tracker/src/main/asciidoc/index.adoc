@@ -1,0 +1,24 @@
+= Storm Tracker Service API Guide
+Billy Korando;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+[[overview]]
+= Overview
+
+API of Storm Tracker Service. Example of using contracts to both test an API to make sure it meets contract requirements and then generate API documentation from supplied contracts. 
+
+Form More Information on Contract Testing checkout:  https://github.com/wkorando/collaborative-contract-testing[Collaborative Contract Testing]
+
+[[resources-tag-retrieve]]
+== Find all storms
+
+A `GET` request to retrieve all produce items
+
+operation::ContractVerifierTest_validate_find_all_storms[snippets='curl-request,response-body,http-request,http-response']

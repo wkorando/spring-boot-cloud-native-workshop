@@ -8,6 +8,7 @@ public class StormTrackerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(StormTrackerApplication.class, args);
+		System.setProperty("https.protocols", "SSLv3");
 	}
 
 }
