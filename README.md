@@ -10,7 +10,7 @@ You will need the following to walk through this code example:
 * [Maven](https://maven.apache.org/)
 * [Docker](https://www.docker.com/get-started)
 * An [IBM Cloud account](https://cloud.ibm.com/registration)
-* [IBM Cloud Command Line Interface](https://cloud.ibm.com/docs/cli/reference/ibmcloud?topic=cloud-cli-install-ibmcloud-cli)
+* [IBM Cloud Command Line Interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-install-ibmcloud-cli)
 * An IDE of your choice
 
 ## Initialize a Kubernetes Cluster
