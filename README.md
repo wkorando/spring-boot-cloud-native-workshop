@@ -7,7 +7,6 @@ For more in-depth instruction and explanation of the steps you can read the Livi
 You will need the following to walk through this code example:
 
 * [Java 8+](https://adoptopenjdk.net/releases.html)
-* [Maven](https://maven.apache.org/)
 * [Docker](https://www.docker.com/get-started)
 * An [IBM Cloud account](https://cloud.ibm.com/registration)
 * [IBM Cloud Command Line Interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-install-ibmcloud-cli)
@@ -66,7 +65,7 @@ IBM Cloud will now begin initializing the Kubernetes cluster. This will take sev
 
    **Note:** If you are using a federated IBM Cloud account [follow these steps](https://cloud.ibm.com/docs/iam?topic=iam-federated_id#federated_id).
 
-1. Once logged in, create a namespace for your container registry. 
+1. Once logged in, create a namespace for your container registry, the name doesn't matter, but use something memborable as we will be using that value later. 
 
    To create a namespace run the following command:
 
@@ -180,7 +179,7 @@ ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
 1. Build the project and push an image to the container registry with the following command:
 
    ```
-	mvn package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
+	./mvnw package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
    ```
 	**Note:** If you are getting an issue where adoptopenjdk/openjdk8-openj9:alpine-slim is not being pulled run `docker pull adoptopenjdk/openjdk8-openj9:alpine-slim` first before the above command. 
 	**Note:** You will use the api key in the file we created at the end of the [Configure IBM Cloud](#configure-ibm-cloud). Be sure to use the value **iampikey** for the username.
@@ -289,3 +288,7 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
    ```
 
 1. Using the public IP and port from these outputs, you should be able to call your Spring Boot application at `<public IP>:<exposed port>/api/v1/storms`.
+
+## Contnnecting to a Cloud Hosted Database
+
+In the next exercise we will ook at how to connect the Spring Boot application we built in this exercise to a cloud hosted database. Continue on with the exercise [here](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database). 
