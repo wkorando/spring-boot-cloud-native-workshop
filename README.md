@@ -282,4 +282,12 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
 
 ## Connecting to a Cloud Hosted Database
 
-In the next exercise we will ook at how to connect the Spring Boot application we built in this exercise to a cloud hosted database. Continue on with the exercise [here](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database). 
+In the next exercise we will ook at how to connect the Spring Boot application we built in this exercise to a cloud hosted database. The instructions are available here [here](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database).
+
+Be sure to switch your code to the correct branch as well:
+
+```
+git checkout 2-connecting-to-a-database 
+```
+
+ 
