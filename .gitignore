@@ -1,12 +1,10 @@
 HELP.md
-finish/.DS_Store
+.DS_Store
 finish/storm-tracker/target/classes/		
 finish/storm-tracker/target/generated-sources/		
 finish/storm-tracker/target/maven-archiver/		
 finish/storm-tracker/target/maven-status/			
 finish/storm-tracker/target/storm-tracker.jar.original
-
-!.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
 finish/storm-tracker/.apt_generated
