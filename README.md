@@ -1,8 +1,28 @@
-# Living on the Cloud 
+# Spring Boot Cloud Native Workshop
 
-This workshop demonstrates how to rapidly build, test, and deploy a Spring Boot applicationto a Kubernetes cluster on IBM Cloud. This workshop closely follows the content of the blog series [Living on the Cloud]((https://developer.ibm.com/series/living-on-the-cloud/)). 
+This workshop is designed to help spring developers get familiar with the important concepts invovled with building, deploying, testing Spring Boot applications on a cloud platform, in this case IBM Cloud, using Kubernetes. This workshop closely follows the content of the article series [Living on the Cloud]((https://developer.ibm.com/series/living-on-the-cloud/)). 
 
 Each exercise in this project is its own branch.
+
+## Prerequisties 
+
+This workshop requires the followign for completion: 
+
+* [Java 8+](https://adoptopenjdk.net/)
+* [Docker](https://www.docker.com/)
+* [An IBM Cloud account](https://ibm.biz/BdzCAu)
+* [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
+* An IDE of your choice
+
+### Initialize a Kubernetes Cluster
+
+Initializing a Kubernetes cluster takes ~30 minutes. It is highly encouraged to start this process as early as possible: 
+
+1. Log in to your [IBM Cloud account](http://cloud.ibm.com/). 
+
+1. In the top center of the page search for **Kubernetes Cluster** and select it.
+
+1. Create a **Free Kubernetes cluster**. To initialize a Lite cluster, you will need to upgrade your IBM Cloud account, if you have not already.
 
 ## Deploy Spring Boot to Kubernetes 
 
