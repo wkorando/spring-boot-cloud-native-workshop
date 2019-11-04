@@ -4,6 +4,14 @@ In this step we will walkthrough the minimal steps of deploying a Spring Boot ap
 
 For more in-depth instruction and explanation of the steps you can read the Living on the Cloud article [here](https://developer.ibm.com/tutorials/living-on-the-cloud-1/).
 
+## Switch to Current Branch
+
+From the root of the project directory make sure you switch to the current branch with the following command: 
+
+```
+git checkout 1-deploying-spring-boot
+```
+
 ## Create a Container Registry
 
 In Kubernetes everything is running in a container. In this workshop in this workshop we will be using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from the container images it will be running. IBM Cloud provides a container registry service, over these next few steps we will be creating and configuring our Kubernetes to communicate with a container registry. 
@@ -283,11 +291,3 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
 ## Connecting to a Cloud Hosted Database
 
 In the next exercise we will ook at how to connect the Spring Boot application we built in this exercise to a cloud hosted database. The instructions are available here [here](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database).
-
-Be sure to switch your code to the correct branch as well:
-
-```
-git checkout 2-connecting-to-a-database 
-```
-
- 
