@@ -1,16 +1,21 @@
 # Connecting Spring Boot to a Cloud Hosted Database
 
+IBM Cloud has a catalog of services available to handle many of the needs of an enterprise. One of the most common requirements of enterprises is the longterm persistence of business valuable information in a database. In this section we will walk through connecting our Spring Boot application to a DB2 instance.
+
 ## Create Cloud Database
 
-1. Go to [https://cloud.ibm.com/](https://cloud.ibm.com/) and in the top center search for **ElephantSQL**
-2. Give a memorable name for the service
+1. Go to [https://cloud.ibm.com/](https://cloud.ibm.com/) and in the top center search for **DB2**
+2. Give a memorable name for you DB2 instance, we will be needing it later
 3. Select the **Lite** plan 
+4. Select the current region you are in
 4. Click **Create**
 
 ## Handling the CRUD with Spring Data 
 
+Spring Data is a popular library within the Spring Framework ecosystem. Using the Repostiroy pattern within Spring Data you can easily configure an application so that it is communicating with a database in mere minutes. We will be using Spring Data in this section to handle the database with the database we just created.  
+
 1. Open your **pom.xml**
-2. Update the version:
+2. We will want to update the version of the application. The build process is using this to tag the image as well and Kubernetes, by default, won't re-deploy an image if it has the same tag as the current version on an application:
 
 	```
 	<version>0.0.2-SNAPSHOT</version>
@@ -23,9 +28,9 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-data-jpa</artifactId>
 	</dependency>
-	<dependency>
-		<groupId>org.postgresql</groupId>
-		<artifactId>postgresql</artifactId>
+	<groupId>com.ibm.db2.jcc</groupId>
+		<artifactId>db2jcc</artifactId>
+		<version>db2jcc4</version>
 	</dependency>
 	```
 
@@ -129,17 +134,46 @@
 	}
 	```
 
-## Configuring the Database and Creating Kubernetes Secrets
+## Using Kubernetes Secrets to Connect to a Service
 
-1. Back on [https://cloud.ibm.com/](https://cloud.ibm.com/) and in the top center search for service name of the database you just created.
+To connect to services our Spring Boot application will need connection information like username and password. Storing this information directly in `application.properties` files iss insecure and inconvenient. Kubernetes can securely store sensitive connection information like usernames and passwords in Kubernetes Secrets. You can then configure Kubernetes to supply these values when an application needs them. Let's configure Kubernetes to store the username and password to our new database in a secret: 
 
-1. Create a file named **secret.yaml** and add the below contents to it: 
+
+1. Open your terminal and run the following commandto create service credentials for connecting to the database we created at the start of this section:
+
+	```
+	ibmcloud resource service-key-create creds_Db2 Manager --instance-name <instance name>
+	```
+	You will get output back that looks something like this:
+	
+	```	
+	Name:          creds_Db2   
+ID:            crn:v1:bluemix:public:dashdb-for-transactions:us-south:a/4b4c36db94004c51b937b0343f8960f0:ec2f281c-5d4f-412e-a3ba-978882506e73:resource-key:1062ffab-c555-42c4-9c2d-c109520425b1   
+Created At:    Mon Nov  4 12:12:49 UTC 2019   
+State:         active   
+Credentials:                       
+               db:           BLUDB      
+               dsn:          DATABASE=BLUDB;HOSTNAME=dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net;PORT=50000;PROTOCOL=TCPIP;UID=trv96241;PWD=b23lk8r-qnxwfbtm;      
+               host:         <host>      
+               hostname:     <host name>      
+               https_url:    https://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net      
+               jdbcurl:      jdbc:db2://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net:50000/BLUDB      
+               parameters:         
+               password:     <password>     
+               port:         50000      
+               ssldsn:       DATABASE=BLUDB;HOSTNAME=dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net;PORT=50001;PROTOCOL=TCPIP;UID=trv96241;PWD=b23lk8r-qnxwfbtm;Security=SSL;      
+               ssljdbcurl:   jdbc:db2://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net:50001/BLUDB:sslConnection=true;      
+               uri:          db2://trv96241:b23lk8r-qnxwfbtm@dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net:50000/BLUDB      
+               username:     trv96241      
+   ```
+   
+1. Create a file named **secret.yaml** and copy in the following: 
 
 	```
 	apiVersion: v1
 	kind: Secret
 	metadata:
-	  name: postgres-connection-info
+	  name: db2-connection-info
 	type: Opaque
 	data:
 	  username: <base64 username>
@@ -149,28 +183,35 @@
 
 	**Note:** Using to base64 a value on a nix system use this command: `echo -n 'value' | base64`
 
-1. In a terminal window in the same directory where you have **secret.yaml** located run the following:
+1. In a terminal window in the same directory where you created **secret.yaml** run the following:
 
 	```
 	kubectl apply -f secret.yaml
 	```
 	
-1. Back in your web browser, on the left side of the page select **BROWSER**
+1. Back on [IBM Cloud](https://cloud.ibm.com/), search for the DB2 instance you created earlier.
+
+2. In the DB2 dashboard, click the **Open Console** button near the center of the page.
+
+3. Click the "hamburger" button in the top left hand corner of the page (it's the three small green dashes)
+
+4. Click **Run SQL** 
 
 1. In the query box copy and execute the following: 
 
 	```sql
-	create sequence storms_id_generator start 10 increment 1;
+	create sequence storms_id_generator start with 10 increment by 1 no maxvalue no cycle cache 24;
 	
 	create table storms (id int8 not null, end_date varchar(255), end_location varchar(255), intensity int4 not null, start_date varchar(255), start_location varchar(255), type varchar(255), primary key (id));
 	
-	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (nextval('storms_id_generator'), '10-10-2018', '10-13-2018', 'Denver, Colorado', 'Kansas City, Missouri', 'Thunderstorm', 2);
+	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (storms_id_generator.NEXTVAL, '10-10-2018', '10-13-2018', 'Denver, Colorado', 'Kansas City, Missouri', 'Thunderstorm', 2);
 	
-	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (nextval('storms_id_generator'), '01-15-2019', '01-17-2019', 'Atlantic Ocean', 'New York City, New York', 'Blizzard', 4);
+	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (storms_id_generator.NEXTVAL, '01-15-2019', '01-17-2019', 'Atlantic Ocean', 'New York City, New York', 'Blizzard', 4);
 	```
 
 ## Update the Kubernetes Deployment and Spring Boot Application
 
+In the previous section we simply deployed the Spring Boot application from the command line, largely leading the specifics of how the application should be deployed up to the Kubernetes cluster. This isn't a good longterm solution, in this section we will pull down the `deployment.yml` Kubernetes created when we deployed the application initially and update it to fit the needs of our application. 
 
 1. Let's bring down the the YAML file for **storm-tracker** applications we deployed in the previous exercise:
 	```
@@ -290,12 +331,12 @@
 	        - name: db-username
 	          valueFrom:
 	            secretKeyRef:
-	              name: postgres-connection-info
+	              name: db2-connection-info
 	              key: username
 	        - name: db-password
 	          valueFrom:
 	            secretKeyRef:
-	              name: postgres-connection-info
+	              name: db2-connection-info
 	              key: password
 	      dnsPolicy: ClusterFirst
 	      restartPolicy: Always
@@ -315,17 +356,23 @@
 
 	```
 	spring.datasource.url=jdbc:postgresql://raja.db.elephantsql.com:5432/hyvrmshj
-	spring.datasource.driver-class-name=org.postgresql.Driver
-	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL95Dialect
+	spring.datasource.driver-class-name=com.ibm.db2.jcc.DB2Driver
+	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.DB2Dialect
 	spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 	#^^^prevents a warning exception from being thrown. See: https://github.com/spring-projects/spring-boot/issues/12007
 	spring.jpa.open-in-view=false
 	#^^^suppresses warning exception related to OSIV https://vladmihalcea.com/the-open-session-in-view-anti-pattern/
 	```
+	
+1. Lastly run the build again to send the updated docker image to the container registry:
+
+```
+./mvnw package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
+```
 
 ## Redeploy the Application to Kubernetes
 
-1. In a terminal window from the 
+1. We will now want to update the deployment description on our Kubernetes cluster with the `deployment.yaml` with the deployment file we just created. 
 
 	```
 	kubectl apply -f deployment.yaml

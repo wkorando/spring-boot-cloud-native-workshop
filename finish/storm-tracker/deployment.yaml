@@ -36,12 +36,12 @@ spec:
         - name: db-username
           valueFrom:
             secretKeyRef:
-              name: postgres-connection-info
+              name: db2-connection-info
               key: username
         - name: db-password
           valueFrom:
             secretKeyRef:
-              name: postgres-connection-info
+              name: db2-connection-info
               key: password
       dnsPolicy: ClusterFirst
       restartPolicy: Always
