@@ -1,35 +1,20 @@
 # Deploying Spring Boot to a Kubernetes Cluster
 
+In this step we will walkthrough the minimal steps of deploying a Spring Boot application on a Kubernetes cluster. 
+
 For more in-depth instruction and explanation of the steps you can read the Living on the Cloud article [here](https://developer.ibm.com/tutorials/living-on-the-cloud-1/).
-
-## Prerequisites
-
-You will need the following to walk through this code example:
-
-* [Java 8+](https://adoptopenjdk.net/releases.html)
-* [Docker](https://www.docker.com/get-started)
-* An [IBM Cloud account](https://cloud.ibm.com/registration)
-* [IBM Cloud Command Line Interface](https://cloud.ibm.com/docs/cli?topic=cloud-cli-install-ibmcloud-cli)
-* An IDE of your choice
-
-## Initialize a Kubernetes Cluster
-
-1. Log in to your [IBM Cloud account](http://cloud.ibm.com/). 
-
-1. In the top center of the page search for **Kubernetes Cluster** and select it.
-
-1. Create a **Free Kubernetes cluster**. To initialize a Lite cluster, you will need to upgrade your IBM Cloud account, if you have not already.
-
- 	
-IBM Cloud will now begin initializing the Kubernetes cluster. This will take several minutes to complete.
 
 ## Create a Container Registry
 
-1. In the top center of the page search for **Container Registry** and select it.
+In Kubernetes everything is running in a container. In this workshop in this workshop we will be using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from the container images it will be running. IBM Cloud provides a container registry service, over these next few steps we will be creating and configuring our Kubernetes to communicate with a container registry. 
+
+1. In the top center of the [IBM Cloud Dashboard](https://cloud.ibm.com/) search for **Container Registry** and select it.
 
 1. Click **Create**, and you should be brought to the **Registry** home page.
 
 ## Configure IBM Cloud CLI
+
+IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handled directly through the IBM CLoub CLI. This is is often quicker and easier than going the the Web UI. The IBM Cloud CLI makes uses of plugins to handle various capabilities. We will be installing a couple of plugins in this section. 
 
 1. Run the following command to install the container-registry plugin:
 
@@ -103,6 +88,8 @@ IBM Cloud will now begin initializing the Kubernetes cluster. This will take sev
    
 ## Create Demo Application
 
+We will be creating a simple Spring Boot application during this workshop. If you don't want to go through the process of writing the demo application and/or run into problems, under the `/finish/storm-tracker` a *near complete* application is available.  
+
 1. Create a project on [start.spring.io](https://start.spring.io/).
 	
 	* Name the project **storm-tracker**
@@ -129,6 +116,10 @@ IBM Cloud will now begin initializing the Kubernetes cluster. This will take sev
    Verify the application is working: [http://localhost:8080/api/v1/storms](http://localhost:8080/api/v1/storms).
    
 ## Containerizing the Application
+
+Containerization wraps all an applications dependencies in a lightweight runtime. This helps increase portability as someone only needs the container agent, in this case Docker, to run an application. In Docker containers are built off images, which functions similar to a `.jar` or `.war`. A **Dockerfile** is used to describe how an image should be built. We will be configuring our project to create an Docker image of the Spring Boot project we are building in this section. 
+
+**Note:** If you are using the project under `/finish` you should still read through these instructions as you will need to update the `pom.xml` with values specific to your account.
 
 1. Create a file called **Dockerfile** in the root of the project directory and add the following:  
 
@@ -205,13 +196,13 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
    To set the region run:
 
    ```
-   ibmcloud ks region-set <your region>
+   ibmcloud ks region set <your region>
    ```
 
 1. Download the configuration information for your cluster:
 
    ```
-   ibmcloud ks cluster-config <your cluster name>
+   ibmcloud ks cluster config <your cluster name>
    ```
 
    The output response from this command should look something like this:
@@ -289,6 +280,6 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
 
 1. Using the public IP and port from these outputs, you should be able to call your Spring Boot application at `<public IP>:<exposed port>/api/v1/storms`.
 
-## Contnnecting to a Cloud Hosted Database
+## Connecting to a Cloud Hosted Database
 
 In the next exercise we will ook at how to connect the Spring Boot application we built in this exercise to a cloud hosted database. Continue on with the exercise [here](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/2-connecting-to-a-database). 

@@ -1,0 +1,32 @@
+HELP.md
+finish/.DS_Store
+finish/storm-tracker/target/classes/		
+finish/storm-tracker/target/generated-sources/		
+finish/storm-tracker/target/maven-archiver/		
+finish/storm-tracker/target/maven-status/			
+finish/storm-tracker/target/storm-tracker.jar.original
+
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+finish/storm-tracker/.apt_generated
+finish/storm-tracker/.classpath
+finish/storm-tracker/.factorypath
+finish/storm-tracker/.project
+finish/storm-tracker/.settings
+finish/storm-tracker/.springBeans
+finish/storm-tracker/.sts4-cache
+
+### IntelliJ IDEA ###
+finish/storm-tracker/.idea
+finish/storm-tracker/*.iws
+finish/storm-tracker/*.iml
+finish/storm-tracker/*.ipr
+
+### NetBeans ###
+finish/storm-tracker/nbproject/private/
+finish/storm-tracker/nbbuild/
+finish/storm-tracker/dist/
+finish/storm-tracker/nbdist/
+finish/storm-tracker/.nb-gradle/
+finish/storm-tracker/build/
