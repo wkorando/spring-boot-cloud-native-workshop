@@ -13,6 +13,12 @@ This workshop requires the followign for completion:
 * [An IBM Cloud account](https://ibm.biz/BdzCAu)
 * [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
 * An IDE of your choice
+* [git](https://git-scm.com/)
+* Clone this repo:
+
+	```
+	https://github.com/wkorando/spring-boot-cloud-native-workshop.git
+	```
 
 ### Initialize a Kubernetes Cluster
 
