@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: William.Korando@ibm.com
+Build-Jdk: 13-ea
+Implementation-Title: storm-tracker
+Implementation-Version: 0.0.2-SNAPSHOT
+Implementation-Vendor-Id: com.ibm.developer
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-boot
+ -starter-parent/storm-tracker
+Created-By: Maven Integration for Eclipse
+
