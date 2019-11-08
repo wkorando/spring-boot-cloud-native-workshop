@@ -1,10 +1,12 @@
 # Spring Boot Cloud Native Workshop
 
-This workshop is designed to help spring developers get familiar with the important concepts invovled with building, deploying, testing Spring Boot applications on a cloud platform, in this case IBM Cloud, using Kubernetes. This workshop closely follows the content of the article series [Living on the Cloud]((https://developer.ibm.com/series/living-on-the-cloud/)). 
+This workshop is designed with Spring Developers in mind. If your organization is thinking about or in the process of making the move to a Cloud Platform built on Kubernetes, this workshop will help give you hands on experience of working with Kubernetes.
 
-Each exercise in this project is its own branch.
+For additional reading, be sure to check out the [Living on the Cloud](https://developer.ibm.com/series/living-on-the-cloud/) blog series on IBM Developer.  
 
 ## What You Will Learn
+
+In this workshop you will learn about the following concepts: 
 
 * Working with Kubernetes
 * Building Delivery Pipelines
@@ -12,23 +14,28 @@ Each exercise in this project is its own branch.
 
 ## Table of Contents
 
-
+1. [Prerequisties](#prerequisties)
+2. [Deploying Spring Boot to a Kubernetes Cluster](#deploying-spring-boot-to-a-kubernetes-luster)
+3. Connecting Spring Boot to a Cloud Hosted Database
+4. Cloud Native Integration Testing
 
 ## Prerequisties 
 
-This workshop requires the followign for completion: 
+This workshop requires several tools to be installed on your system before beginning:
 
-* [Java 8+](https://adoptopenjdk.net/)
-* [Docker](https://www.docker.com/)
+* You will need [Java 8+](https://adoptopenjdk.net/)
+* Docker will be required as we will be creating Docker images [Docker](https://www.docker.com/)
 * [An IBM Cloud account](https://ibm.biz/BdzCAu)
 * [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
-* An IDE of your choice
-* [git](https://git-scm.com/)
-* Clone this repo:
+* You will need an IDE or an advanced text editor like [Notepad++](https://notepad-plus-plus.org/) or [TextMate](https://macromates.com/)
+* Clone or download this repo (green button, in upper right hand of page)
 
-	```
-	https://github.com/wkorando/spring-boot-cloud-native-workshop.git
-	```
+### Windows Users
+
+<details>
+<summary>Click to Expand</summary>
+This workshop makes heavy use of terminal commands. The terminal command examples in this workshop are use *nix idioms. For that reason it is highly encouraged to either use [Cygwin](https://www.cygwin.com/) or [install/enable the Linux Bash shell](https://www.windowscentral.com/how-install-bash-shell-command-line-windows-10) that was added to Windows 10.  
+</details>
 
 ### Initialize a Kubernetes Cluster
 
@@ -40,13 +47,13 @@ Initializing a Kubernetes cluster takes ~30 minutes. It is highly encouraged to 
 
 1. Create a **Free Kubernetes cluster**. To initialize a Lite cluster, you will need to upgrade your IBM Cloud account, if you have not already.
 
-# Deploying Spring Boot to a Kubernetes Cluster
+## Deploying Spring Boot to a Kubernetes Cluster
 
 In this step we will walkthrough the minimal steps of deploying a Spring Boot application on a Kubernetes cluster. 
 
 For more in-depth instruction and explanation of the steps you can read the Living on the Cloud article [here](https://developer.ibm.com/tutorials/living-on-the-cloud-1/).
 
-## Switch to Current Branch
+### Switch to Current Branch
 
 From the root of the project directory make sure you switch to the current branch with the following command: 
 
@@ -54,7 +61,7 @@ From the root of the project directory make sure you switch to the current branc
 git checkout 1-deploying-spring-boot
 ```
 
-## Create a Container Registry
+### Create a Container Registry
 
 In Kubernetes everything is running in a container. In this workshop in this workshop we will be using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from the container images it will be running. IBM Cloud provides a container registry service, over these next few steps we will be creating and configuring our Kubernetes to communicate with a container registry. 
 
@@ -62,7 +69,7 @@ In Kubernetes everything is running in a container. In this workshop in this wor
 
 1. Click **Create**, and you should be brought to the **Registry** home page.
 
-## Configure IBM Cloud CLI
+### Configure IBM Cloud CLI
 
 IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handled directly through the IBM CLoub CLI. This is is often quicker and easier than going the the Web UI. The IBM Cloud CLI makes uses of plugins to handle various capabilities. We will be installing a couple of plugins in this section. 
 
@@ -136,7 +143,7 @@ IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handl
    ```
    **Note:** This file contains sensitive information so you will want to keep it secure and memborable location.
    
-## Create Demo Application
+### Create Demo Application
 
 We will be creating a simple Spring Boot application during this workshop. If you don't want to go through the process of writing the demo application and/or run into problems, under the `/finish/storm-tracker` a *near complete* application is available.  
 
@@ -165,7 +172,7 @@ We will be creating a simple Spring Boot application during this workshop. If yo
 
    Verify the application is working: [http://localhost:8080/api/v1/storms](http://localhost:8080/api/v1/storms).
    
-## Containerizing the Application
+### Containerizing the Application
 
 Containerization wraps all an applications dependencies in a lightweight runtime. This helps increase portability as someone only needs the container agent, in this case Docker, to run an application. In Docker containers are built off images, which functions similar to a `.jar` or `.war`. A **Dockerfile** is used to describe how an image should be built. We will be configuring our project to create an Docker image of the Spring Boot project we are building in this section. 
 
@@ -235,7 +242,7 @@ ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
    [INFO] DOCKER> Pushed us.icr.io/living-on-the-cloud/storm-tracker in 14 seconds
    ```
 
-## Deploy to Kubernetes
+### Deploy to Kubernetes
 
 By now, your Kubernetes cluster has hopefully finished initializing. To verify that it has, go back to the Dashboard page and see if the status is **Normal** for the cluster you just created.
 
@@ -334,11 +341,11 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
 
 1. Using the public IP and port from these outputs, you should be able to call your Spring Boot application at `<public IP>:<exposed port>/api/v1/storms`.
 
-# Connecting Spring Boot to a Cloud Hosted Database
+## Connecting Spring Boot to a Cloud Hosted Database
 
 IBM Cloud has a catalog of services available to handle many of the needs of an enterprise. One of the most common requirements of enterprises is the longterm persistence of business valuable information in a database. In this section we will walk through connecting our Spring Boot application to a DB2 instance.
 
-## Create Cloud Database
+### Create Cloud Database
 
 1. Go to [https://cloud.ibm.com/](https://cloud.ibm.com/) and in the top center search for **DB2**
 2. Give a memorable name for you DB2 instance, we will be needing it later
@@ -346,7 +353,7 @@ IBM Cloud has a catalog of services available to handle many of the needs of an 
 4. Select the current region you are in
 4. Click **Create**
 
-## Handling the CRUD with Spring Data 
+### Handling the CRUD with Spring Data 
 
 Spring Data is a popular library within the Spring Framework ecosystem. Using the Repostiroy pattern within Spring Data you can easily configure an application so that it is communicating with a database in mere minutes. We will be using Spring Data in this section to handle the database with the database we just created.  
 
@@ -470,7 +477,7 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 	}
 	```
 
-## Using Kubernetes Secrets to Connect to a Service
+### Using Kubernetes Secrets to Connect to a Service
 
 To connect to services our Spring Boot application will need connection information like username and password. Storing this information directly in `application.properties` files iss insecure and inconvenient. Kubernetes can securely store sensitive connection information like usernames and passwords in Kubernetes Secrets. You can then configure Kubernetes to supply these values when an application needs them. Let's configure Kubernetes to store the username and password to our new database in a secret: 
 
@@ -545,7 +552,7 @@ To connect to services our Spring Boot application will need connection informat
 	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (storms_id_generator.NEXTVAL, '01-15-2019', '01-17-2019', 'Atlantic Ocean', 'New York City, New York', 'Blizzard', 4);
 	```
 
-## Update the Kubernetes Deployment and Spring Boot Application
+### Update the Kubernetes Deployment and Spring Boot Application
 
 In the previous section we simply deployed the Spring Boot application from the command line, largely leading the specifics of how the application should be deployed up to the Kubernetes cluster. This isn't a good longterm solution, in this section we will pull down the `deployment.yml` Kubernetes created when we deployed the application initially and update it to fit the needs of our application. 
 
@@ -706,7 +713,7 @@ In the previous section we simply deployed the Spring Boot application from the 
 ./mvnw package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
 ```
 
-## Redeploy the Application to Kubernetes
+### Redeploy the Application to Kubernetes
 
 1. We will now want to update the deployment description on our Kubernetes cluster with the `deployment.yaml` with the deployment file we just created. 
 
@@ -744,11 +751,11 @@ In the previous section we simply deployed the Spring Boot application from the 
 	   }
 	]
 ```
-# Cloud native Integration Testing
+## Cloud native Integration Testing
 
 In this section we will look at some new tools for handling the intergration testing needs of Cloud Native applications. A key to going fast in the modern world is having fast, portable, reliable integration tests. 
 
-## Services Integration Testing with TestContainers
+### Services Integration Testing with TestContainers
 
 1. Open your **pom.xml** and add the following:
 
@@ -841,7 +848,7 @@ In this section we will look at some new tools for handling the intergration tes
 
 In the above test class the tool [TestContainers](https://www.testcontainers.org) is setting up and tearing down a PostgreSQL docker container. By using a local database issues that could cause tests to fail like data missing or network connectivity are reduced. By using a Docker container developers don't have to locally install, configure, and administer a database, making these tests portable.
 
-## API Testing With Spring Cloud Contract
+### API Testing With Spring Cloud Contract
 
 1. Open your **pom.xml** and add the following:
 
@@ -886,7 +893,7 @@ Spring Cloud Contract makes the test of APIs for both producers and consumers su
 
 Spring Cloud Contract produces a stubs artifact that consumers (clients) can use to test their service against to see if it can properly consume the produce service. Like with TestContainers above this allows fast and reliable integration testing that avoids issues of data going missing or problems with network connectivity. 
 
-## Generating Documentation From Tests 
+### Generating Documentation From Tests 
 
 1. Open your **pom.xml** and add the following:
 
