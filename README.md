@@ -15,9 +15,9 @@ In this workshop you will learn about the following concepts:
 ## Table of Contents
 
 1. [Prerequisties](#prerequisties)
-2. [Deploying Spring Boot to a Kubernetes Cluster](#deploying-spring-boot-to-a-kubernetes-luster)
-3. Connecting Spring Boot to a Cloud Hosted Database
-4. Cloud Native Integration Testing
+2. [Deploying Spring Boot to a Kubernetes Cluster](#deploying-spring-boot-to-a-kubernetes-cluster)
+3. [Connecting Spring Boot to a Cloud Hosted Database](#connecting-spring-boot-to-a-cloud-hosted-database)
+4. [Cloud Native Integration Testing](#cloud-native-integration-testing)
 
 ## Prerequisties 
 
@@ -750,8 +750,8 @@ In the previous section we simply deployed the Spring Boot application from the 
 	      "intensity":4
 	   }
 	]
-```
-## Cloud native Integration Testing
+	```
+## Cloud-Native Integration Testing
 
 In this section we will look at some new tools for handling the intergration testing needs of Cloud Native applications. A key to going fast in the modern world is having fast, portable, reliable integration tests. 
 
