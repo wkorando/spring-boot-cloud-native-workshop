@@ -1,9 +1,5 @@
 ---
 defaultBaseImageVersion: latest
-properties:
-- name: HELM_VERSION
-  value: '2.12.3'
-  type: text
 stages:
 - name: BUILD
   inputs:
@@ -106,39 +102,6 @@ stages:
       # Minting image tag using format: BUILD_NUMBER-BRANCH-COMMIT_ID-TIMESTAMP
       # Also copies information into a build.properties file, so they can be reused later on by other scripts (e.g. image url, chart name, ...)
       source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/build_image.sh")
-- name: VALIDATE
-  inputs:
-  - type: job
-    stage: CONTAINERIZE
-    job: Build Docker image
-  triggers:
-  - type: stage
-  properties:
-  - name: build_proprties
-    value: build.properties
-    type: file
-  jobs:
-  - name: Vulnerability Advisor
-    type: tester
-    test_type: vulnerabilityadvisor
-    use_image_from_build_input: true
-    fail_stage: false
-    target:
-      region_id: ${REGISTRY_REGION_ID}
-      api_key: ${API_KEY}
-    script: |
-      #!/bin/bash
-      # uncomment to debug the script
-      # set -x
-      # copy the script below into your app code repo (e.g. ./scripts/check_vulnerabilities.sh) and 'source' it from your pipeline job
-      #    source ./scripts/check_vulnerabilities.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_vulnerabilities.sh")
-      # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_vulnerabilities.sh
-
-      # Check for vulnerabilities of built image using Vulnerability Advisor
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_vulnerabilities.sh")
 - name: PROD
   inputs:
   - type: job
@@ -149,9 +112,6 @@ stages:
   properties:
   - name: CLUSTER_NAMESPACE
     value: ${PROD_CLUSTER_NAMESPACE}
-    type: text
-  - name: CHART_ROOT
-    value: chart
     type: text
   - name: APP_URL
     value: undefined
@@ -182,7 +142,7 @@ stages:
       # Checks the IBM Container Service cluster is ready, has a namespace configured with access to the private
       # image registry (using an IBM Cloud API Key). It also configures Helm Tiller service to later perform a deploy with Helm.
       source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_predeploy_helm.sh")
-  - name: Deploy Helm chart
+  - name: Deploy Spring Boot App
     type: deployer
     target:
       region_id: ${PROD_REGION_ID}
@@ -199,26 +159,5 @@ stages:
       #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/deploy_helm.sh")
       # ------------------
       # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/deploy_helm.sh
-
       # Perform a helm deploy of container image and check on outcome
       source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/deploy_helm.sh")
-  - name: Health check
-    type: deployer
-    target:
-      region_id: ${PROD_REGION_ID}
-      resource_group: ${PROD_RESOURCE_GROUP}
-      api_key: ${API_KEY}
-      kubernetes_cluster: ${PROD_CLUSTER_NAME}
-    script: |-
-      #!/bin/bash
-      # uncomment to debug the script
-      # set -x
-      # copy the script below into your app code repo (e.g. ./scripts/check_health.sh) and 'source' it from your pipeline job
-      #    source ./scripts/check_health.sh
-      # alternatively, you can source it from online script:
-      #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
-      # ------------------
-      # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
-
-      # Check liveness and readiness probes to confirm application is healthy
-      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
