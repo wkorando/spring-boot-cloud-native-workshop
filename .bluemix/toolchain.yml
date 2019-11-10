@@ -1,4 +1,6 @@
 version: '2'
+messages:
+  $i18n: locales.yml
 template:
   name: "Spring Boot Cloud Native Workshop"
   description: "Workshop for demonstrating how to build, deploy, and test Spring Boot Applications on Kubernetes"
@@ -8,9 +10,10 @@ template:
 
 toolchain:
   name: spring-boot-cloud-native-workshop
-
+  template:
+    getting_started:
+      $ref: "#/messages/template.gettingStarted"
 services:
-
   # Github repos
   repo:
     service_id: hostedgit
@@ -27,7 +30,7 @@ services:
     parameters:
       services: 
         - repo
-      name: "{{toolchain.name}}"
+      name: 'pipeline'
       ui-pipeline: true
       configuration:
         content: 
