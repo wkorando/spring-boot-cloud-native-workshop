@@ -21,7 +21,7 @@ services:
       repo_url: 'https://github.com/wkorando/spring-boot-cloud-native-workshop'
       repo_name: 'spring-boot-cloud-native-workshop'
       type: clone
-      has_issues: false
+      has_issues: true
       enable_traceability: false
 
   # Pipelines
