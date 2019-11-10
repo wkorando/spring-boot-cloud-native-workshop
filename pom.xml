@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.ibm.developer</groupId>
 	<artifactId>storm-tracker</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>storm-tracker</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -32,26 +32,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<images>
-						<image>
-							<name>us.icr.io/living-on-the-cloud/${project.name}</name>
-							<build>
-								<dockerFile>Dockerfile</dockerFile>
-								<dockerFileDir>${project.basedir}</dockerFileDir>
-								<tags>
-									<tag>latest</tag>
-									<tag>${project.version}</tag>
-								</tags>
-							</build>
-						</image>
-					</images>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

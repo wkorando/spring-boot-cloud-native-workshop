@@ -1,8 +1,8 @@
 # Spring Boot Cloud Native Workshop
 
-This workshop is designed with Spring Developers in mind. If your organization is thinking about or in the process of making the move to a Cloud Platform built on Kubernetes, this workshop will help give you hands on experience of working with Kubernetes.
+The Spring Boot Cloud Native Workshop is designed around introducing Spring Developers to the Kubernetes platform. If your organization is thinking about or in the process of making the move to a Cloud Platform built on Kubernetes, this workshop will help give you hands on experience of working with of the most important and fundamental Kubernetes features and concepts.
 
-For additional reading, be sure to check out the [Living on the Cloud](https://developer.ibm.com/series/living-on-the-cloud/) blog series on IBM Developer.  
+For additional reading on this subject, be sure to check out the [Living on the Cloud](https://developer.ibm.com/series/living-on-the-cloud/) blog series on IBM Developer.  
 
 ## What You Will Learn
 
@@ -14,21 +14,23 @@ In this workshop you will learn about the following concepts:
 
 ## Table of Contents
 
-1. [Prerequisties](#prerequisties)
-2. [Deploying Spring Boot to a Kubernetes Cluster](#deploying-spring-boot-to-a-kubernetes-cluster)
-3. [Connecting Spring Boot to a Cloud Hosted Database](#connecting-spring-boot-to-a-cloud-hosted-database)
-4. [Cloud Native Integration Testing](#cloud-native-integration-testing)
+### 1. [Setup](#setup)
+### 2. [Deploying a Spring Boot Application to a Kubernetes Cluster](#deploying-spring-boot-to-a-kubernetes-cluster)
+### 3. [Connecting a Spring Boot Application Spring Boot to a Cloud Hosted Database](#connecting-spring-boot-to-a-cloud-hosted-database)
+### 4. [Cloud Native Integration Testing](#cloud-native-integration-testing)
 
-## Prerequisties 
+## Setup 
+
+As this workshop will be completed using your own system and will involve building and creating several artifacts, some configuration is required in order to successfully complete this workshop. This section will walk you through these steps. 
+
+### Installation Prerequisites 
 
 This workshop requires several tools to be installed on your system before beginning:
 
-* You will need [Java 8+](https://adoptopenjdk.net/)
-* Docker will be required as we will be creating Docker images [Docker](https://www.docker.com/)
-* [An IBM Cloud account](https://ibm.biz/BdzCAu)
-* [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
+* [Java 8+](https://adoptopenjdk.net/)
+* [Docker](https://www.docker.com/get-started)
 * You will need an IDE or an advanced text editor like [Notepad++](https://notepad-plus-plus.org/) or [TextMate](https://macromates.com/)
-* Clone or download this repo (green button, in upper right hand of page)
+* [git](https://git-scm.com/downloads)
 
 ### Windows Users
 
@@ -37,49 +39,154 @@ This workshop requires several tools to be installed on your system before begin
 This workshop makes heavy use of terminal commands. The terminal command examples in this workshop are use *nix idioms. For that reason it is highly encouraged to either use [Cygwin](https://www.cygwin.com/) or [install/enable the Linux Bash shell](https://www.windowscentral.com/how-install-bash-shell-command-line-windows-10) that was added to Windows 10.  
 </details>
 
-### Initialize a Kubernetes Cluster
+### IBM Cloud Account Setup
 
-Initializing a Kubernetes cluster takes ~30 minutes. It is highly encouraged to start this process as early as possible: 
+During this workshop we will deploy a live application to IBM Cloud and will be making use of services and tools hosted on IBM Cloud. This workshop also requires an "upgraded" IBM Cloud account. This section will walk you through creating an IBM Cloud account and upgrading it:
 
-1. Log in to your [IBM Cloud account](http://cloud.ibm.com/). 
+1. [Create an IBM Cloud account by filling out this form](https://ibm.biz/BdzCAu)
+2. Once you have completed the sign up process and are signed into your IBM Cloud account on https://cloud.ibm.com expand the **Manage** menu and select **Account**
 
-1. In the top center of the page search for **Kubernetes Cluster** and select it.
+	![](images/promo-code-1.png)
+3. Once on the Account page select **Account settings** on the left hand of the page, and then click the **Apply Code** button: 	
 
-1. Create a **Free Kubernetes cluster**. To initialize a Lite cluster, you will need to upgrade your IBM Cloud account, if you have not already.
-
-## Deploying Spring Boot to a Kubernetes Cluster
-
-In this step we will walkthrough the minimal steps of deploying a Spring Boot application on a Kubernetes cluster. 
-
-For more in-depth instruction and explanation of the steps you can read the Living on the Cloud article [here](https://developer.ibm.com/tutorials/living-on-the-cloud-1/).
-
-### Switch to Current Branch
-
-From the root of the project directory make sure you switch to the current branch with the following command: 
-
-```
-git checkout 1-deploying-spring-boot
-```
-
-### Create a Container Registry
-
-In Kubernetes everything is running in a container. In this workshop in this workshop we will be using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from the container images it will be running. IBM Cloud provides a container registry service, over these next few steps we will be creating and configuring our Kubernetes to communicate with a container registry. 
-
-1. In the top center of the [IBM Cloud Dashboard](https://cloud.ibm.com/) search for **Container Registry** and select it.
-
-1. Click **Create**, and you should be brought to the **Registry** home page.
-
+	![](images/promo-code-2.png)
+	
+4. Use the provided url to enter a promo code for you account. 	
 ### Configure IBM Cloud CLI
 
-IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handled directly through the IBM CLoub CLI. This is is often quicker and easier than going the the Web UI. The IBM Cloud CLI makes uses of plugins to handle various capabilities. We will be installing a couple of plugins in this section. 
+IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction with IBM Cloud. In this workshop we will be making heavy use out of the IBM Cloud CLI to carry out commands. We will need to walk through a few steps however to make sure the CLI is configured correctly for this workshop.
 
-1. Run the following command to install the container-registry plugin:
+1. Download the [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
+2. Once the installation process has completed, open a bash friendly terminal window
+	
+	The IBM Cloud CLI uses a modular design. Functionality for handling different IBM Cloud behaviors is located within plugins. We will need to install a couple of these plugins for this workshop.
+	
+3. Install the **Container Registry** plugin:
 
    ```
    ibmcloud plugin install container-registry
    ```
+4. Install the **Container Service** plugin:
+	
+	```
+	ibmcloud plugin install container-service
+	```
 
-1. Once the install script has completed, run the following command to ensure it was successful:
+5. Login into IBM Cloud CLI with the following:
+
+	```
+	ibmcloud login 
+	```
+   **Note:** If you are using a federated IBM Cloud account [follow these steps](https://cloud.ibm.com/docs/iam?topic=iam-federated_id#federated_id).
+
+5. View the current target region with the following:
+
+	```
+	ibmcloud target
+	```
+	You should get output that looks something like this:
+	
+	```
+	API endpoint:      https://cloud.ibm.com   
+	Region:            us-south   
+	User:              myemail@mail.com   
+	Account:           My Account Name   
+	Resource group:    Default   
+	CF API endpoint:   https://api.ng.bluemix.net (API version: 2.141.0)   
+	Org:               myemail@mail.com   
+	Space:             dev   
+	```
+	If the region in your output is `us-south` and `org` and `space` have provided values, move on to [Initializing a Kubernetes Cluster](#initializing-a-kubernetes-cluster). If you are in a different region or org and space expand of of the below sections.
+	
+	
+	### Change Region
+	<details>
+	<summary>Expand here to view change region instructions</summary>
+	To aid in the following of this, it is best to set your region to `us-south` (Dallas). The free-tier of some services are not available in every region and by using `us-south` the the settings and console output will more closely match the examples given in the guide. The below steps will walk you through this process:
+	
+	1. Change target region to `us-south`:
+	
+	```
+	ibmcloud target -r us-south
+	```
+	
+	2. IBM Cloud has the "organizations" concept which provides a means for collaboration, logical grouping of applications, and is a security region. From the output of `ibmcloud target` replace the values `YOUR_ORG` and `INITIAL_REGION` with the values of `Org:` and `Region:` respectively.
+
+	```
+	ibmcloud account org-replicate YOUR_ORG us-south -r INITIAL_REGION
+	```
+	
+	3. IBM Cloud also has the concept of "spaces" which are sub-group to "organizations", which like "organization" can be used for collaboration, logical group, and act as a security region. We will want to create the `dev` region in our newly replicated `org` with the following command:
+
+	```
+	ibmcloud account space-create dev -o YOUR_ORG
+	```
+	
+	4. Finally we will want IBM Cloud CLI to target the org and space we just created as we are going through this workshop this can be done with this command:
+
+	```
+	ibmcloud target -o YOUR_ORG -s dev
+	```
+	
+	You should get output that looks like this: 
+	
+	```
+	API endpoint:      https://cloud.ibm.com   
+	Region:            us-south   
+	User:              myemail@mail.com   
+	Account:           My Account Name   
+	Resource group:    Default   
+	CF API endpoint:   https://api.ng.bluemix.net (API version: 2.141.0)    
+	Org:               YOUR_ORG   
+	Space:             dev   
+	```
+	
+	If the region is `us-south` and org and space are populated you can move on to [Initializing a Kubernetes Cluster](#initializing-a-kubernetes-cluster). If the region still isn't right or space or org are not populated, verify you run all the above steps or get the attention of someone helping run the workshop.
+	</details>
+	
+	### Blank Org and Target
+	<details>
+	<summary>Expand here to view blank org and target instructions</summary>
+	
+	The 'Org' and 'Space' fields not being populated can happen because the region IBM Cloud chose when you created your IBM Cloud account is different from the region IBM Cloud CLI chose when you signed in. Trying changing the target region to a geographically nearby region with the following command:
+	
+	```
+	ibmcloud target -r REGION
+	```
+	Here is a list of all IBM Cloud regions: 
+	
+	```
+	Name       Display name   
+	au-syd     Sydney   
+	jp-tok     Tokyo   
+	eu-de      Frankfurt   
+	eu-gb      London   
+	us-south   Dallas   
+	us-east    Washington DC 
+	``` 
+	
+	If in the output `Org:` and `Space:` are not populated, trying switching to another region. If `Org:` and `Space:` are populated, but not in `us-south` [check out these instructions](#change-region). If you are still running into issues be sure to ask for help from someone helping run the workshop. 
+	</details>
+
+### Initializing a Kubernetes Cluster
+
+We will be deploying and modifying a Spring Boot application on a Kubernetes cluster. A free-tier cluster is available on IBM Cloud to give developers an opportunity to get familiar with working with Kuberentes on a cloud platform. Initializing a Kubernetes cluster takes about ~30 minutes, so let's start the process now and let it run in the background as we work through the next steps. To initialize a free cluster run the following command:  
+
+```
+ibmcloud ks cluster create --name spring-boot-workshop --zone dal10
+```
+
+## Deploying Spring Boot to a Kubernetes Cluster
+
+In this section we will walk through the steps of configuring our Cloud Platform, building a pipeline, and deploying a Spring Boot application to the Kubernetes cluster we have just created.
+
+### Create a Container Registry
+
+In Kubernetes every application is running in a container. In this workshop we are using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from that contains the container images we will be telling it to run.
+
+IBM Cloud provides a container registry service, we will use it to store the Docker Images we will be creating in this workshop. Let's configure the container registry now: 
+
+1. Run the following command to ensure the `container-registry` plugin has been installed successsfully: 
 
    ```
    ibmcloud cr info
@@ -97,17 +204,8 @@ IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handl
 
    **Note:** If you had previously installed the container registry and you have container registry URLs that include the word "bluemix," learn how to [update your API endpoints](https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local).
 
-1. Log in to your IBM Cloud account through the IBM Cloud CLI using the following command:
 
-   ```
-   ibmcloud login -a https://cloud.ibm.com
-   ```
-
-   You will be prompted to enter the email and password associated with your IBM Cloud account.
-
-   **Note:** If you are using a federated IBM Cloud account [follow these steps](https://cloud.ibm.com/docs/iam?topic=iam-federated_id#federated_id).
-
-1. Once logged in, create a namespace for your container registry, the name doesn't matter, but use something memborable as we will be using that value later. 
+1. Create a namespace for your container registry, the name doesn't matter, but use something memborable as we will be using that value later. 
 
    To create a namespace run the following command:
 
@@ -141,36 +239,11 @@ IBM Cloud has a powerful Command Line Interface (CLI). Most actions can be handl
 		"uuid": "ApiKey-004a8490-5275-4fb3-b8c8-e0fd495214ed"
 	}
    ```
-   **Note:** This file contains sensitive information so you will want to keep it secure and memborable location.
+   **Note:** This file contains sensitive information so you will want to keep it in a secure and memborable location.
    
-### Create Demo Application
+### Small But Bootiful
 
-We will be creating a simple Spring Boot application during this workshop. If you don't want to go through the process of writing the demo application and/or run into problems, under the `/finish/storm-tracker` a *near complete* application is available.  
-
-1. Create a project on [start.spring.io](https://start.spring.io/).
-	
-	* Name the project **storm-tracker**
-	* Include the **Web** dependency 
-
-1. Open the project in your IDE.
-
-1. Create a new class called `StormTrackerController` and add to it a `@GetMapping` that returns `"Hello World"`` as the response. 
-
-   Here is what the completed class should look like:
-
-   ```java
-   @RestController
-   @RequestMapping("/api/v1/storms")
-   public class StormTrackerController {
-
-     @GetMapping
-     public ResponseEntity<String> helloWorld(){
-      return ResponseEntity.ok("Hello World");
-     }
-   }
-   ```
-
-   Verify the application is working: [http://localhost:8080/api/v1/storms](http://localhost:8080/api/v1/storms).
+An initial Spring Boot application is 
    
 ### Containerizing the Application
 
@@ -243,6 +316,10 @@ ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
    ```
 
 ### Deploy to Kubernetes
+
+
+[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/wkorando/spring-boot-cloud-native-workshop&branch=master&env_id=ibm:yp:us-south)
+
 
 By now, your Kubernetes cluster has hopefully finished initializing. To verify that it has, go back to the Dashboard page and see if the status is **Normal** for the cluster you just created.
 
@@ -663,29 +740,31 @@ In the previous section we simply deployed the Spring Boot application from the 
 	        run: storm-tracker
 	    spec:
 	      containers:
-	      - image: <container registry>/<namespace>/storm-tracker:0.0.2-SNAPSHOT
+	      - image: <container registry>/<namespace>/storm-tracker:0.0.1-SNAPSHOT
 	        imagePullPolicy: Always
 	        name: storm-tracker
 	        resources: {}
 	        terminationMessagePath: /dev/termination-log
 	        terminationMessagePolicy: File
-	        args: ["--spring.datasource.username=$(db-username)","--spring.datasource.password=$(db-password)"]
-	        env:
-	        - name: db-username
-	          valueFrom:
-	            secretKeyRef:
-	              name: db2-connection-info
-	              key: username
-	        - name: db-password
-	          valueFrom:
-	            secretKeyRef:
-	              name: db2-connection-info
-	              key: password
 	      dnsPolicy: ClusterFirst
 	      restartPolicy: Always
 	      schedulerName: default-scheduler
 	      securityContext: {}
 	      terminationGracePeriodSeconds: 30
+	----
+	kind: Service
+	apiVersion: v1
+	metadata:
+	  name: storm-tracker-port
+	  labels:
+	    app: storm-tracker-port
+	spec:
+	  selector:
+	    app: storm-tracker
+	  ports:
+	    - port: 8080
+	      name: http
+	  type: NodePort
 	```
 
 	Remember to update the image line, including updating the version to `0.0.2-SNAPSHOT`:

@@ -1,0 +1,54 @@
+version: '2'
+template:
+  name: "Spring Boot Cloud Native Workshop"
+  description: "Workshop for demonstrating how to build, deploy, and test Spring Boot Applications on Kubernetes"
+  required:
+    - repo
+    - build
+
+toolchain:
+  name: spring-boot-cloud-native-workshop
+
+services:
+
+  # Github repos
+  repo:
+    service_id: hostedgit
+    parameters:
+      repo_url: "{{#zip_url}}{{zip_url}}{{/zip_url}}{{^zip_url}}{{repository}}{{/zip_url}}"
+      repo_name: "{{toolchain.name}}"
+      type: clone
+      has_issues: false
+      enable_traceability: true
+
+  # Pipelines
+  build:
+    service_id: pipeline
+    parameters:
+      services: 
+        - repo
+      name: "{{toolchain.name}}"
+      ui-pipeline: true
+      configuration:
+        content: 
+          $text: pipeline.yml
+        env:
+          GIT_REPO: repo
+          CF_APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
+          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
+          PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
+          PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
+        execute: true
+
+#Deployment
+form:
+  pipeline:
+    parameters:
+      app-name: '{{services.repo.parameters.repo_name}}'
+      prod-cluster-namespace: prod
+    schema:
+      $ref: deploy.json
