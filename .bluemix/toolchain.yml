@@ -18,22 +18,22 @@ services:
   repo:
     service_id: hostedgit
     parameters:
-      repo_url: "{{#zip_url}}{{zip_url}}{{/zip_url}}{{^zip_url}}{{repository}}{{/zip_url}}"
-      repo_name: "{{toolchain.name}}"
+      repo_url: 'https://github.com/wkorando/spring-boot-cloud-native-workshop'
+      repo_name: 'spring-boot-cloud-native-workshop'
       type: clone
       has_issues: false
-      enable_traceability: true
+      enable_traceability: false
 
   # Pipelines
   build:
     service_id: pipeline
     parameters:
-      services: 
+      services:
         - repo
       name: 'pipeline'
       ui-pipeline: true
       configuration:
-        content: 
+        content:
           $text: pipeline.yml
         env:
           GIT_REPO: repo
@@ -46,8 +46,8 @@ services:
           PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
           PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
         execute: true
-
-#Deployment
+  webide:
+    service_id: orion
 form:
   pipeline:
     parameters:
