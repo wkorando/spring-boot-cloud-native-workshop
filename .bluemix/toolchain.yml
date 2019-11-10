@@ -6,8 +6,6 @@ template:
     $ref: "#/messages/template.name"
   description:
     $ref: "#/messages/template.description"
-  header: '![](toolchain.svg?localize)'
-  icon: secure-lock-helm.svg
   required:
     - build
     - repo
