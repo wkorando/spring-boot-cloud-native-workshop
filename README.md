@@ -221,29 +221,24 @@ IBM Cloud provides a container registry service, we will use it to store the Doc
    Successfully added namespace '[your namespace]'
    ```
 
-1. Create an API token that you we will use for pushing images to the container registry:
+### Setting Up a Deployment Pipeline
 
-   ```
-   ibmcloud iam api-key-create [API-token-name] -d "[token description]" --file [key_file_name]
-   ```
+Automating the process of building and deploying an application is becoming the norm in the software development industry, and is an essential element of Cloud Native development. An automated deployment pipeline reduces friction, the amount of work, and makes the deployment process much more consistent and auditable. In this section we will create a deployment pipeline for the Spring Boot APplication we will be building in this workshop. 
 
-   When you open the file we just created with the previous command, you the contents should look something like this: 
-   
-   ```
-   {
-		"name": "living-on-the-cloud-cr",
-		"description": "living-on-the-cloud-cr-key",
-		"apikey": "n6P30qr7efUhsHzoJFmwVAKGkT4o4wLCNrXzSBfDQPBZ",
-		"createdAt": "2019-08-01T15:49+0000",
-		"locked": false,
-		"uuid": "ApiKey-004a8490-5275-4fb3-b8c8-e0fd495214ed"
-	}
-   ```
-   **Note:** This file contains sensitive information so you will want to keep it in a secure and memborable location.
-   
+1. Right-click and open a new tab the **Deploy to IBM Cloud** button below:
+
+	[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/wkorando/spring-boot-cloud-native-workshop&branch=master&env_id=ibm:yp:us-south)
+	
+	---
+	**Tip:** This deployment pipeline is being configured based on the template defined in the files under [.bluemix](/.bluemix). Because of time constraints, we won't cover the details of how these files work, but if you are interested you can [read more here](https://github.com/open-toolchain/).
+		
+	---
+	
+2. 
+
 ### Small But Bootiful
 
-An initial Spring Boot application is 
+An initial Spring Boot application has been 
    
 ### Containerizing the Application
 
@@ -318,7 +313,6 @@ ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
 ### Deploy to Kubernetes
 
 
-[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/wkorando/spring-boot-cloud-native-workshop&branch=master&env_id=ibm:yp:us-south)
 
 
 By now, your Kubernetes cluster has hopefully finished initializing. To verify that it has, go back to the Dashboard page and see if the status is **Normal** for the cluster you just created.

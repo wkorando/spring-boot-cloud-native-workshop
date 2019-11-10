@@ -51,7 +51,7 @@ services:
 form:
   pipeline:
     parameters:
-      app-name: '{{services.repo.parameters.repo_name}}'
+      app-name: storm-tracker
       prod-cluster-namespace: prod
     schema:
       $ref: deploy.json

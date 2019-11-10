@@ -25,7 +25,7 @@ spec:
         run: storm-tracker
     spec:
       containers:
-      - image: <container registry>/<namespace>/storm-tracker:0.0.1-SNAPSHOT
+      - image: us.icr.io/living-on-the-cloud/storm-tracker:0.0.1-SNAPSHOT
         imagePullPolicy: Always
         name: storm-tracker
         resources: {}
