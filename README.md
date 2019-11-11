@@ -389,7 +389,7 @@ With some initial knowledge of how Kubernetes works gained, let's see it in acti
 	```
 	ibmcloud ks cluster ls
 	```
-	In the output, under State if it shows as `running`, you are good to continue the next step in the workshop. If `pending` is still showing wait a few moments and run the command again. If a different state is showing, then seek assistance from someone running the workshop.
+	In the output, under State if it shows as `normal`, you are good to continue the next step in the workshop. If `pending` is still showing wait a few moments and run the command again. If a different state is showing, then seek assistance from someone running the workshop.
 	
 	```
 	OK

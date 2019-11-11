@@ -20,17 +20,13 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         run: storm-tracker
     spec:
       containers:
-      - image: $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG
+      - image: $DEPLOYMENT_DOC_INDEX
         imagePullPolicy: Always
         name: storm-tracker
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
