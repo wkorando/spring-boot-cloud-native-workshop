@@ -1,8 +1,8 @@
 # Spring Boot Cloud Native Workshop
 
-The Spring Boot Cloud Native Workshop is designed around introducing Spring Developers to the Kubernetes platform. If your organization is thinking about or in the process of making the move to a Cloud Platform built on Kubernetes, this workshop will help give you hands on experience of working with of the most important and fundamental Kubernetes features and concepts.
+The Spring Boot Cloud Native Workshop is designed to introduce Spring Developers to the Kubernetes platform and Cloud Native development. If your organization is thinking about, or in the process of, making the move to a Cloud Platform built on Kubernetes, this workshop will give you hands on experience of working with of the most important and fundamental Kubernetes features and concepts.
 
-For additional reading on this subject, be sure to check out the [Living on the Cloud](https://developer.ibm.com/series/living-on-the-cloud/) blog series on IBM Developer.  
+For additional reading on on Cloud Native development, be sure to check out the [Living on the Cloud](https://developer.ibm.com/series/living-on-the-cloud/) blog series on IBM Developer.  
 
 ## What You Will Learn
 
@@ -11,6 +11,7 @@ In this workshop you will learn about the following concepts:
 * Working with Kubernetes
 * Building Delivery Pipelines
 * Writing Reliable Automated Tests
+* Connecting to Cloud Services
 
 ## Table of Contents
 
@@ -25,7 +26,7 @@ As this workshop will be completed using your own system and will involve buildi
 
 ### Installation Prerequisites 
 
-This workshop requires several tools to be installed on your system before beginning:
+This workshop requires several tools to be available on your system before beginning:
 
 * [Java 8+](https://adoptopenjdk.net/)
 * [Docker](https://www.docker.com/get-started)
@@ -59,7 +60,7 @@ IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction
 1. Download the [IBM Cloud CLI](https://github.com/IBM-Cloud/ibm-cloud-cli-release/releases/)
 2. Once the installation process has completed, open a bash friendly terminal window
 	
-	The IBM Cloud CLI uses a modular design. Functionality for handling different IBM Cloud behaviors is located within plugins. We will need to install a couple of these plugins for this workshop.
+	The IBM Cloud CLI uses a modular design. Functionality for handling many IBM Cloud services is located within these plugins. We will need to install a two plugins for this workshop.
 	
 3. Install the **Container Registry** plugin:
 
@@ -96,10 +97,10 @@ IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction
 	Org:               myemail@mail.com   
 	Space:             dev   
 	```
-	If the region in your output is `us-south` and `org` and `space` have provided values, move on to [Initializing a Kubernetes Cluster](#initializing-a-kubernetes-cluster). If you are in a different region or org and space expand of of the below sections.
+	If the region in your output is `us-south` and `org` and `space` have provided values, move on to [Initializing a Kubernetes Cluster](#initializing-a-kubernetes-cluster). If you are in a different region or `org` and `space` are blank expand one of the below sections.
 	
 	
-	### Change Region
+	### Wrong Region
 	<details>
 	<summary>Expand here to view change region instructions</summary>
 	To aid in the following of this, it is best to set your region to `us-south` (Dallas). The free-tier of some services are not available in every region and by using `us-south` the the settings and console output will more closely match the examples given in the guide. The below steps will walk you through this process:
@@ -144,7 +145,7 @@ IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction
 	If the region is `us-south` and org and space are populated you can move on to [Initializing a Kubernetes Cluster](#initializing-a-kubernetes-cluster). If the region still isn't right or space or org are not populated, verify you run all the above steps or get the attention of someone helping run the workshop.
 	</details>
 	
-	### Blank Org and Target
+	### Blank Org and Space
 	<details>
 	<summary>Expand here to view blank org and target instructions</summary>
 	
@@ -182,9 +183,9 @@ In this section we will walk through the steps of configuring our Cloud Platform
 
 ### Create a Container Registry
 
-In Kubernetes every application is running in a container. In this workshop we are using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from that contains the container images we will be telling it to run.
+In Kubernetes every application is running in a container. In this workshop we are using Docker as our container implementation, but Kubernetes supports other container types. Kubernetes needs a container registy to pull from that contains the container images we will be telling it to run (more on this in a moment).
 
-IBM Cloud provides a container registry service, we will use it to store the Docker Images we will be creating in this workshop. Let's configure the container registry now: 
+IBM Cloud provides a container registry service, we will use it to store the Docker images we will be building in this workshop. Let's configure the container registry now: 
 
 1. Run the following command to ensure the `container-registry` plugin has been installed successsfully: 
 
@@ -205,7 +206,7 @@ IBM Cloud provides a container registry service, we will use it to store the Doc
    **Note:** If you had previously installed the container registry and you have container registry URLs that include the word "bluemix," learn how to [update your API endpoints](https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local).
 
 
-1. Create a namespace for your container registry, the name doesn't matter, but use something memborable as we will be using that value later. 
+1. Create a namespace for your container registry, the name doesn't matter, but use something unique and memborable as we will be using that value later. 
 
    To create a namespace run the following command:
 
@@ -223,7 +224,7 @@ IBM Cloud provides a container registry service, we will use it to store the Doc
 
 ### Setting Up a Deployment Pipeline
 
-Automating the process of building and deploying an application is becoming the norm in the software development industry, and is an essential element of Cloud Native development. An automated deployment pipeline reduces friction, the amount of work, and makes the deployment process much more consistent and auditable. In this section we will create a deployment pipeline for the Spring Boot APplication we will be building in this workshop. 
+Automating the process of building and deploying an application is becoming the norm in the software industry, and is an essential element of Cloud Native development. An automated deployment pipeline reduces friction, the amount of work, and makes the deployment process much more consistent and auditable. In this section we will create a deployment pipeline for the Spring Boot APplication we will be building in this workshop. 
 
 1. Right-click and open a new tab the **Deploy to IBM Cloud** button below:
 
@@ -234,19 +235,52 @@ Automating the process of building and deploying an application is becoming the 
 		
 	---
 	
-2. 
+2. For the Lite account users, make sure the region (1) is set to Dallas (us-south). Next, click (2) to configure the Delivery Pipeline.
 
-### Small But Bootiful
+	![](./images/pipeline-1.png)
 
-An initial Spring Boot application has been 
-   
-### Containerizing the Application
+3. Next create an API Key for this repo by clicking **Delivery Pipeline** and then the **Create** button. The default values that are generated should be fine.
 
-Containerization wraps all an applications dependencies in a lightweight runtime. This helps increase portability as someone only needs the container agent, in this case Docker, to run an application. In Docker containers are built off images, which functions similar to a `.jar` or `.war`. A **Dockerfile** is used to describe how an image should be built. We will be configuring our project to create an Docker image of the Spring Boot project we are building in this section. 
+	![](images/create_api_key.png)
 
-**Note:** If you are using the project under `/finish` you should still read through these instructions as you will need to update the `pom.xml` with values specific to your account.
+4. Cick the **Create** button in the top right corner of the page.
 
-1. Create a file called **Dockerfile** in the root of the project directory and add the following:  
+	IBM Cloud will now take a few moments to initialize this toolchain. 
+	
+	
+### Configuring Git
+
+As a part of the process of creating the toolchain IBM Cloud has automatically cloned this workshop repository into a private repository hosted on IBM Cloud. You can configure a toolchain to pull from an existing repository, but this method works best for this workshop. Let's walk through the steps to configure git so we can read and write to this repository.  
+	
+1. After the toolchain has finished initializing you should have a page that looks like this. Click on the Git icon:
+
+	![](images/open-git.png)
+	
+2. From the main git repo page click the avatar in the top right hand corner and from the drop down menu select settings.
+
+	![](images/git-token-1.png)	
+	
+3. On the settings page click on "Access Tokens", on that page give a meaningful name in the name dialog, select some future date for the token to expire, and be ssure to check all the boxes. Once down click "create personal access token"
+
+	![](images/git-token-2.png)	
+
+4. CTRL + click return to the main page in a separate tab.
+5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the git repo url
+6. In your terminal window, navigate to a folder where you'd like to have this repo located. Once there run the following command:
+
+	```
+	git clone GIT_REPO_URL
+	```
+	
+	You will be promoted for login information. The user name is you IBM Cloud account and the password will be the the token we just created. 
+
+### Configuration as Code
+
+Configuration as Code is a practice of co-locating configuration information about how an application should be executed in the same location where the code for the application is stored. This practices helps developers understand an application better by keeping all the important information about an application in a ssingle area. This practice is also essential for building deployment pipelines as the pipelines will read this configuration information when deploying the application. Let's look at the configuration information in this project.
+
+#### Dockerfile
+
+As mentioned earlier every application running in Kubernetes is running in a container. Docker users Dockerfiles to describe how a container image should be built. The Dockerfile in this project looks like this:
 
 ```
 FROM adoptopenjdk/openjdk8-openj9:alpine-slim
@@ -256,76 +290,122 @@ COPY target/storm-tracker.jar /
 ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]
 ```
 
-1. In the **pom.xml**, under **\<build\>** in pom.xml, add the following:
+Let's step through what all these elements mean.
 
-* The value of `container registry` will be the first line returned from calling `ibmcloud cr info`
-* The value of `namespace` will be the container namespace created a few steps earlier
+`FROM adoptopenjdk/openjdk8-openj9:alpine-slim`: This is describing which image to build this docker image off of. In this example we are building off a image provided by adoptopenjdk that contains the OpenJ9 JVM running Java 8. `alpine-slim` is a minimal Linux distro. 
 
-   ```
-   	<build>
-		<finalName>storm-tracker</finalName>
-		<plugins>
-			...
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<images>
-						<image>
-							<name>[container registry]/[namespace]/${project.name}</name>
-							<build>
-								<dockerFile>Dockerfile</dockerFile>
-								<dockerFileDir>${project.basedir}</dockerFileDir>
-								<tags>
-									<tag>latest</tag>
-									<tag>${project.version}</tag>
-								</tags>
-							</build>
-						</image>
-					</images>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-   ```
-   
-   **Note:** Be sure to add `<finalName>storm-tracker</finalName>` as well
+`COPY target/storm-tracker.jar /`: This is copying the Java artifact we will be building into the docker image.
 
-1. Build the project and push an image to the container registry with the following command:
+`ENTRYPOINT ["java", "-jar", "storm-tracker.jar" ]`: This is the command the image will run when it is started up. 
 
-   ```
-	./mvnw package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
-   ```
-   
-	**Note:** If you are getting an issue where adoptopenjdk/openjdk8-openj9:alpine-slim is not being pulled run:
-    ```bash
-    docker pull adoptopenjdk/openjdk8-openj9:alpine-slim
-    ```
-    first before the above command. 
-	**Note:** You will use the api key in the file we created at the end of the [Configure IBM Cloud](#configure-ibm-cloud). Be sure to use the value **iampikey** for the username.
-   You should see output that looks like the following near the end of the build execution:
+#### Deployment.yml
 
-   ```
-   [INFO] DOCKER> Pushed us.icr.io/living-on-the-cloud/storm-tracker in 14 seconds
-   ```
+`deployment.yml` files are ussed by Kubernetes to describe how an application should be deployed on a Kubernetes cluster. A deployment file is already present, let's take a look at it.
+
+```
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: storm-tracker
+  name: storm-tracker
+  namespace: default
+  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/storm-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: storm-tracker
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: storm-tracker
+    spec:
+      containers:
+      - image: $REPO_URL/$REPO_NAMESPACE/storm-tracker:$TAG
+        imagePullPolicy: Always
+        name: storm-tracker
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+----
+kind: Service
+apiVersion: v1
+metadata:
+  name: storm-tracker-port
+  labels:
+    app: storm-tracker-port
+spec:
+  selector:
+    app: storm-tracker
+  ports:
+    - port: 8080
+      name: http
+  type: NodePort
+```
+
+### Small But Bootiful
+
+An initial Spring Boot application is already located within the repo we just cloned down. We will be making change to this application through out this workshop, in thiss section we will do the first step every programmer has done, create a "Hello World" application. 
+
+1. Under `src/main/java/com/ibm/developer/stormtracker/` create a new file `StormTrackerController.java` and copy the following into that file: 
+
+	```
+	package com.ibm.developer.stormtracker;
+
+	import org.springframework.http.ResponseEntity;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RestController;
+	
+	@RestController
+	@RequestMapping("/api/v1/storms")
+	public class StormTrackerController {
+	
+		@GetMapping
+		public ResponseEntity<String> helloWorld(){
+			return ResponseEntity.ok("Hello World");
+		}
+	}
+	```
+
+2. Save the file, but **DO NOT** push these changes yet to your repo!
 
 ### Deploy to Kubernetes
 
+With some initial knowledge of how Kubernetes works gained, let's see it in action!
 
+1. The Kubernetes cluster should hopefully be initialized by now. To verify this run the following command:
 
+	```
+	ibmcloud ks cluster ls
+	```
+	In the output, under State if it shows as `running`, you are good to continue the next step in the workshop. If `pending` is still showing wait a few moments and run the command again. If a different state is showing, then seek assistance from someone running the workshop.
+	
+	```
+	OK
+Name                   ID                     State     Created          Workers   Location   Version       Resource Group Name   Provider   
+spring-boot-workshop   bn41o1pd0eec78gq93rg   running   11 minutes ago   1         hou02      1.14.8_1536   Default               classic  
+	```
+	
+2. Commit and push your changes to your repo:
 
-By now, your Kubernetes cluster has hopefully finished initializing. To verify that it has, go back to the Dashboard page and see if the status is **Normal** for the cluster you just created.
+	```
+	git add .
+	git commit -m "Added hello world url"
+	git push
+	```
 
-1. Add the container-service plugin to the IBM Cloud CLI, which will also download and install **kubectl**:
+3. Committing changes to the repo will starts the deployment pipeline process, to view its process click this link **NEED LINK**
 
-   ```
-   ibmcloud plugin install container-service
-   ```
+#### Configure Kubectl
 
-1. Set the IBM Cloud CLI to the region your cluster is located in. To view all regions run `ibmcloud regions`.
+While the pipeline process runs, let's configure kubectl so that we can admin the Kubernetes cluster. 
 
-   To set the region run:
+1. Set the region for the ks plugin to `us-south` with the following command:
 
    ```
    ibmcloud ks region set <your region>
@@ -358,17 +438,9 @@ By now, your Kubernetes cluster has hopefully finished initializing. To verify t
    10.77.223.210   Ready     <none>    8h        v1.11.7+IKS
    ```
 
-1. Deploy and run the image you created earlier on your cluster (like above you will need to fill in the correct values of `container registry` and `namespace`:
+### Test the Application
 
-   ```
-   kubectl run storm-tracker --image=[container registry]/[namespace]/storm-tracker
-   ```
-
-1. To make your service accessible from an external IP, you will need to expose it, like this:
-
-   ```
-   kubectl expose deployment storm-tracker --port=8080 --target-port=8080 --name=storm-tracker-service --type=NodePort
-   ```
+Once the deployment pipeline has completed, we can finally test our application to make sure it deployed successfully. To do that complete the following steps.
 
 1. To find the port that has been publicly exposed, you can ask Kubernetes to provide a description of the `NodePort` you just created:
 
@@ -623,151 +695,6 @@ To connect to services our Spring Boot application will need connection informat
 	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (storms_id_generator.NEXTVAL, '01-15-2019', '01-17-2019', 'Atlantic Ocean', 'New York City, New York', 'Blizzard', 4);
 	```
 
-### Update the Kubernetes Deployment and Spring Boot Application
-
-In the previous section we simply deployed the Spring Boot application from the command line, largely leading the specifics of how the application should be deployed up to the Kubernetes cluster. This isn't a good longterm solution, in this section we will pull down the `deployment.yml` Kubernetes created when we deployed the application initially and update it to fit the needs of our application. 
-
-1. Let's bring down the the YAML file for **storm-tracker** applications we deployed in the previous exercise:
-	```
-	kubectl get deployments storm-tracker --namespace=default -o yaml > deployment.yaml
-	```
-
-	Open **deployment.yaml** in a text editor, it should look something like this: 
-
-	```yaml
-	apiVersion: extensions/v1beta1
-	kind: Deployment
-	metadata:
-	  annotations:
-	    deployment.kubernetes.io/revision: "12"
-	    kubectl.kubernetes.io/last-applied-configuration: |
-	      {"apiVersion":"extensions/v1beta1","kind":"Deployment","metadata":{"annotations":{},"labels":{"run":"storm-tracker"},"name":"storm-tracker","namespace":"default","selfLink":"/apis/extensions/v1beta1/namespaces/default/deployments/storm-tracker"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"run":"storm-tracker"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"run":"storm-tracker"}},"spec":{"containers":[{"args":["--spring.application.json=$(BINDING)"],"env":[{"name":"BINDING","valueFrom":{"secretKeyRef":{"key":"binding","name":"binding-living-on-the-cloud"}}}],"image":"us.icr.io/openj9-demo/storm-tracker:0.0.2-SNAPSHOT","imagePullPolicy":"Always","name":"storm-tracker","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}}}}
-	  creationTimestamp: "2019-08-01T22:48:32Z"
-	  generation: 25
-	  labels:
-	    run: storm-tracker
-	  name: storm-tracker
-	  namespace: default
-	  resourceVersion: "1132314"
-	  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/storm-tracker
-	  uid: 7cb6f3c5-b4ae-11e9-9a9f-461265fcff59
-	spec:
-	  progressDeadlineSeconds: 600
-	  replicas: 1
-	  revisionHistoryLimit: 10
-	  selector:
-	    matchLabels:
-	      run: storm-tracker
-	  strategy:
-	    rollingUpdate:
-	      maxSurge: 25%
-	      maxUnavailable: 25%
-	    type: RollingUpdate
-	  template:
-	    metadata:
-	      creationTimestamp: null
-	      labels:
-	        run: storm-tracker
-	    spec:
-	      containers:
-	        image: us.icr.io/openj9-demo/storm-tracker:0.0.1-SNAPSHOT
-	        imagePullPolicy: Always
-	        name: storm-tracker
-	        resources: {}
-	        terminationMessagePath: /dev/termination-log
-	        terminationMessagePolicy: File
-	      dnsPolicy: ClusterFirst
-	      restartPolicy: Always
-	      schedulerName: default-scheduler
-	      securityContext: {}
-	      terminationGracePeriodSeconds: 30
-	status:
-	  availableReplicas: 1
-	  conditions:
-	  - lastTransitionTime: "2019-08-09T16:10:37Z"
-	    lastUpdateTime: "2019-08-09T16:10:37Z"
-	    message: Deployment has minimum availability.
-	    reason: MinimumReplicasAvailable
-	    status: "True"
-	    type: Available
-	  - lastTransitionTime: "2019-08-09T16:10:32Z"
-	    lastUpdateTime: "2019-08-09T16:10:37Z"
-	    message: ReplicaSet "storm-tracker-5c99cd9c5f" has successfully progressed.
-	    reason: NewReplicaSetAvailable
-	    status: "True"
-	    type: Progressing
-	  observedGeneration: 25
-	  readyReplicas: 1
-	  replicas: 1
-	  updatedReplicas: 1
-	```
-
-	There is a lot of instance specific information we will want to remove from this **deployment.yaml**. We want is a template for telling Kubernetes how to deploy the **storm-tracker**, in the future. 
-
-	Here is what a **deployment.yaml** should look like this:
-
-	```yaml
-	apiVersion: extensions/v1beta1
-	kind: Deployment
-	metadata:
-	  labels:
-	    run: storm-tracker
-	  name: storm-tracker
-	  namespace: default
-	  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/storm-tracker
-	spec:
-	  progressDeadlineSeconds: 600
-	  replicas: 1
-	  revisionHistoryLimit: 10
-	  selector:
-	    matchLabels:
-	      run: storm-tracker
-	  strategy:
-	    rollingUpdate:
-	      maxSurge: 25%
-	      maxUnavailable: 25%
-	    type: RollingUpdate
-	  template:
-	    metadata:
-	      creationTimestamp: null
-	      labels:
-	        run: storm-tracker
-	    spec:
-	      containers:
-	      - image: <container registry>/<namespace>/storm-tracker:0.0.1-SNAPSHOT
-	        imagePullPolicy: Always
-	        name: storm-tracker
-	        resources: {}
-	        terminationMessagePath: /dev/termination-log
-	        terminationMessagePolicy: File
-	      dnsPolicy: ClusterFirst
-	      restartPolicy: Always
-	      schedulerName: default-scheduler
-	      securityContext: {}
-	      terminationGracePeriodSeconds: 30
-	----
-	kind: Service
-	apiVersion: v1
-	metadata:
-	  name: storm-tracker-port
-	  labels:
-	    app: storm-tracker-port
-	spec:
-	  selector:
-	    app: storm-tracker
-	  ports:
-	    - port: 8080
-	      name: http
-	  type: NodePort
-	```
-
-	Remember to update the image line, including updating the version to `0.0.2-SNAPSHOT`:
-	
-	```
-	      - image: us.icr.io/openj9-demo/storm-tracker:0.0.2-SNAPSHOT
-	```
-
-
 1. Open **application.properties** in your project under `src/main/resources` and add the following:
 
 	```
@@ -824,6 +751,7 @@ In the previous section we simply deployed the Spring Boot application from the 
 	   }
 	]
 	```
+
 ## Cloud-Native Integration Testing
 
 In this section we will look at some new tools for handling the intergration testing needs of Cloud Native applications. A key to going fast in the modern world is having fast, portable, reliable integration tests. 
@@ -845,8 +773,7 @@ In this section we will look at some new tools for handling the intergration tes
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
 		<artifactId>junit-jupiter</artifactId>
-	</dependency>
-			
+	</dependency>	
 	```
 	```
 	<dependencyManagement>
