@@ -264,7 +264,11 @@ As a part of the process of creating the toolchain IBM Cloud has automatically c
 
 	![](images/git-token-2.png)	
 
-4. CTRL + click return to the main page in a separate tab.
+4. Click projects in the top left hand corner of the page and search for `spring-boot`. CTRL + click on the returned email.
+
+	![](images/git-token-4.png)	
+
+	
 5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the git repo url
 6. In your terminal window, navigate to a folder where you'd like to have this repo located. Once there run the following command:
 
@@ -272,7 +276,9 @@ As a part of the process of creating the toolchain IBM Cloud has automatically c
 	git clone GIT_REPO_URL
 	```
 	
-	You will be promoted for login information. The user name is you IBM Cloud account and the password will be the the token we just created. 
+	You will be prompted for login information. The **username** is you IBM Cloud account and the **password** will be the the token we just created. 
+	
+	![](images/git-token-3.png)	
 
 ### Configuration as Code
 
@@ -415,7 +421,7 @@ While the pipeline process runs, let's configure kubectl so that we can admin th
 
    ```
    ibmcloud ks cluster config <your cluster name>
-   ```
+   ```	
 
    The output response from this command should look something like this:
 
