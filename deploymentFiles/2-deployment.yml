@@ -52,5 +52,3 @@ spec:
     - port: 8080
       name: http
   type: NodePort
-  
-  ibmcloud service create dashdb-for-transactions 
