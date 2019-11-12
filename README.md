@@ -81,6 +81,18 @@ IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction
 	```
    **Note:** If you are using a federated IBM Cloud account [follow these steps](https://cloud.ibm.com/docs/iam?topic=iam-federated_id#federated_id).
 
+5. Run this command to set org and space
+	
+	```
+	ibmcloud target --cf
+	```
+
+6. Run this command to set group
+	
+	```
+	ibmcloud target -g Default
+	```
+
 5. View the current target region with the following:
 
 	```
