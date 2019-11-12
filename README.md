@@ -643,6 +643,14 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 4. Create a class called `Storm` under `com.ibm.developer.stormtracker`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import javax.persistence.Entity;
+	import javax.persistence.GeneratedValue;
+	import javax.persistence.Id;
+	import javax.persistence.SequenceGenerator;
+	import javax.persistence.Table;
+
 	@Entity
 	@Table(name = "storms")
 	public class Storm {
@@ -704,6 +712,10 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 5. Create a repository interface `StormRepo` under `com.ibm.developer.stormtracker`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import org.springframework.data.repository.CrudRepository;
+
 	public interface StormRepo extends CrudRepository<Storm, Long> {
 		public Iterable<Storm> findByStartLocation(String type);
 	}
@@ -712,6 +724,20 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 6. Update `StormTrackerController`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import java.net.URI;
+
+	import org.springframework.http.ResponseEntity;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.PathVariable;
+	import org.springframework.web.bind.annotation.PostMapping;
+	import org.springframework.web.bind.annotation.RequestBody;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RequestParam;
+	import org.springframework.web.bind.annotation.RestController;
+	
+	
 	@RestController
 	@RequestMapping("/api/v1/storms")
 	public class StormTrackerController {
