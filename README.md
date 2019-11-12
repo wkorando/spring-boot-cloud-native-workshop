@@ -282,7 +282,7 @@ As a part of the process of creating the toolchain IBM Cloud has automatically c
 
 ### Configuration as Code
 
-Configuration as Code is a practice of co-locating configuration information about how an application should be executed in the same location where the code for the application is stored. This practices helps developers understand an application better by keeping all the important information about an application in a ssingle area. This practice is also essential for building deployment pipelines as the pipelines will read this configuration information when deploying the application. Let's look at the configuration information in this project.
+Configuration as Code is a practice of co-locating configuration information about how an application should be executed in the same location where the code for the application is stored. This practices helps developers understand an application better by keeping all the important information about an application in a single area. This practice is also essential for building deployment pipelines as the pipelines will read this configuration information when deploying the application. Let's look at the configuration information in this project.
 
 #### Dockerfile
 
@@ -306,7 +306,7 @@ Let's step through what all these elements mean.
 
 #### Deployment.yml
 
-`deployment.yml` files are ussed by Kubernetes to describe how an application should be deployed on a Kubernetes cluster. A deployment file is already present, let's take a look at it.
+`deployment.yml` files are used by Kubernetes to describe how an application should be deployed on a Kubernetes cluster. A deployment file is already present, below is the fully contents, let's take a closer look at its two major components.
 
 ```
 apiVersion: extensions/v1beta1
@@ -316,42 +316,142 @@ metadata:
     run: storm-tracker
   name: storm-tracker
   namespace: default
-  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/storm-tracker
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       run: storm-tracker
   template:
     metadata:
-      creationTimestamp: null
       labels:
         run: storm-tracker
     spec:
       containers:
-      - image: $REPO_URL/$REPO_NAMESPACE/storm-tracker:$TAG
-        imagePullPolicy: Always
+      - image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
         name: storm-tracker
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
       terminationGracePeriodSeconds: 30
-----
+---
 kind: Service
 apiVersion: v1
 metadata:
-  name: storm-tracker-port
   labels:
-    app: storm-tracker-port
+    run: storm-tracker
+  name: storm-tracker-port
+  namespace: default
 spec:
   selector:
-    app: storm-tracker
+    run: storm-tracker
   ports:
     - port: 8080
       name: http
   type: NodePort
 ```
+
+##### Deploying an Application
+
+```
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: storm-tracker
+  name: storm-tracker
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      run: storm-tracker
+  template:
+    metadata:
+      labels:
+        run: storm-tracker
+    spec:
+      containers:
+      - image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+        name: storm-tracker
+      terminationGracePeriodSeconds: 30
+```
+
+This section describes how an application should be deployed on the Kubernetes cluster. A [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) describes how a [Pod](https://kubernetes.io/docs/concepts/workloads/pods/pod/) should exist.
+
+```
+metadata:
+  labels:
+    run: storm-tracker
+  name: storm-tracker
+  namespace: default
+```
+
+This section is describing where a the deployment should exist and how it should be presented within the Kubernetes cluster (e.g. how it might be looked up by other Pods and Services within Kubernetes)
+
+```
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      run: storm-tracker
+```
+
+This section defines how many instances of this pod Kubernetes should maintain by default as well as how many previous revisions of a deployment Kubernetes should hold onto for rollback purposes. For scaling and reliability this is a very important area to understand for Kubernetes.
+
+```
+  template:
+    metadata:
+      labels:
+        run: storm-tracker
+    spec:
+      containers:
+      - image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+        name: storm-tracker
+      terminationGracePeriodSeconds: 30
+```
+
+Here we are defining the actual application we will be running. 
+
+* `image` providing the coordinates in a container registry as to which image to run. 
+* `terminationGracePeriodSeconds:` tells Kubernetes how long to wait before terminating a Pod that hasn't reached a healthy state.
+
+##### Exposing an Application
+
+```
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    run: storm-tracker
+  name: storm-tracker-port
+  namespace: default
+spec:
+  selector:
+    run: storm-tracker
+  ports:
+    - port: 8080
+      name: http
+  type: NodePort
+```
+
+Kubernetes uses internal networking to allow pods, services, loadbalancers, etc. to communicate with  each other securely. However to have business value something needs to be exposed to the outside world. In the above section of YAML we are creating a [Service](https://kubernetes.io/docs/concepts/services-networking/service/), in this case a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) to expose the `storm-tracker` application. This association is made with the `selector` text:
+
+```
+spec:
+  selector:
+    run: storm-tracker
+```
+
+By default Spring Boot runs on port `8080`, here we are telling the NodePort to direct external traffic through that port. We are also setting the protocol to use `http`. 
+
+```
+  ports:
+    - port: 8080
+      name: http
+  type: NodePort
+```  
+
+This is an extremely simplified example of how to deploy an application on Kubernetes. We will add more to this deployment file in the workshop, but other concerns not shown in this example would be how to handle rollouts of new version, how to test the health of a pod, security configuration, and many other areas!
 
 ### Small But Bootiful
 
@@ -414,13 +514,13 @@ While the pipeline process runs, let's configure kubectl so that we can admin th
 1. Set the region for the ks plugin to `us-south` with the following command:
 
    ```
-   ibmcloud ks region set <your region>
+   ibmcloud ks region set us-south
    ```
 
 1. Download the configuration information for your cluster:
 
    ```
-   ibmcloud ks cluster config <your cluster name>
+   ibmcloud ks cluster config spring-boot-workshop
    ```	
 
    The output response from this command should look something like this:
@@ -451,13 +551,13 @@ Once the deployment pipeline has completed, we can finally test our application 
 1. To find the port that has been publicly exposed, you can ask Kubernetes to provide a description of the `NodePort` you just created:
 
    ```
-   kubectl describe service storm-tracker-service
+   kubectl describe service storm-tracker-port
    ```
-
+   
    This should provide the following output:
 
    ```
-   Name:                     storm-tracker-service
+   Name:                     storm-tracker-port
    Namespace:                default
    Labels:                   run=storm-tracker
    Annotations:              <none>
@@ -478,7 +578,7 @@ Once the deployment pipeline has completed, we can finally test our application 
 1. You will also need to get the public IP of your Kubernetes cluster:
 
    ```
-   ibmcloud ks workers --cluster [cluster name]
+   ibmcloud ks workers --cluster spring-boot-workshop
    ```
 
    The output should look similar to this:
@@ -494,26 +594,19 @@ Once the deployment pipeline has completed, we can finally test our application 
 
 IBM Cloud has a catalog of services available to handle many of the needs of an enterprise. One of the most common requirements of enterprises is the longterm persistence of business valuable information in a database. In this section we will walk through connecting our Spring Boot application to a DB2 instance.
 
-### Create Cloud Database
+### Create a DB2 Database
 
-1. Go to [https://cloud.ibm.com/](https://cloud.ibm.com/) and in the top center search for **DB2**
-2. Give a memorable name for you DB2 instance, we will be needing it later
-3. Select the **Lite** plan 
-4. Select the current region you are in
-4. Click **Create**
+With the IBM Cloud CLI, you can quick create new service instances with a single command. TO create a new database instance, in this case using DB2, run the following command:
+
+```
+ibmcloud resource service-instance-create spring-boot-db2 dashdb-for-transactions free us-south
+```
 
 ### Handling the CRUD with Spring Data 
 
 Spring Data is a popular library within the Spring Framework ecosystem. Using the Repostiroy pattern within Spring Data you can easily configure an application so that it is communicating with a database in mere minutes. We will be using Spring Data in this section to handle the database with the database we just created.  
 
-1. Open your **pom.xml**
-2. We will want to update the version of the application. The build process is using this to tag the image as well and Kubernetes, by default, won't re-deploy an image if it has the same tag as the current version on an application:
-
-	```
-	<version>0.0.2-SNAPSHOT</version>
-	```
-
-3. Update the **pom.xml** to adding these dependencies:
+1. Open your **pom.xml** update it adding these dependencies:
 
 	```xml
 	<dependency>
@@ -634,7 +727,7 @@ To connect to services our Spring Boot application will need connection informat
 1. Open your terminal and run the following commandto create service credentials for connecting to the database we created at the start of this section:
 
 	```
-	ibmcloud resource service-key-create creds_Db2 Manager --instance-name <instance name>
+	ibmcloud resource service-key-create creds_Db2 Manager --instance-name spring-boot-db2
 	```
 	You will get output back that looks something like this:
 	
@@ -670,17 +763,22 @@ To connect to services our Spring Boot application will need connection informat
 	data:
 	  username: <base64 username>
 	  password: <base64 password>
+	  jdbcurl: <base64 jdbcurl>
 	```
-1. Replace `<base64 username>` & `<base64 password>` with the base64 encoded username\password 
-
-	**Note:** Using to base64 a value on a nix system use this command: `echo -n 'value' | base64`
+1. Replace `<base64 *>` with their appropraite base64 encoded values:
+	
+	```
+	echo -n 'VALUE' | base64
+	```
 
 1. In a terminal window in the same directory where you created **secret.yaml** run the following:
 
 	```
 	kubectl apply -f secret.yaml
 	```
-	
+
+### Adding Test Data
+
 1. Back on [IBM Cloud](https://cloud.ibm.com/), search for the DB2 instance you created earlier.
 
 2. In the DB2 dashboard, click the **Open Console** button near the center of the page.
@@ -689,7 +787,7 @@ To connect to services our Spring Boot application will need connection informat
 
 4. Click **Run SQL** 
 
-1. In the query box copy and execute the following: 
+5. In the query box copy and execute the following: 
 
 	```sql
 	create sequence storms_id_generator start with 10 increment by 1 no maxvalue no cycle cache 24;
@@ -701,10 +799,11 @@ To connect to services our Spring Boot application will need connection informat
 	insert into storms (id, start_date, end_date, start_location, end_location, type, intensity) values (storms_id_generator.NEXTVAL, '01-15-2019', '01-17-2019', 'Atlantic Ocean', 'New York City, New York', 'Blizzard', 4);
 	```
 
+### Configuring the Application
+
 1. Open **application.properties** in your project under `src/main/resources` and add the following:
 
 	```
-	spring.datasource.url=jdbc:postgresql://raja.db.elephantsql.com:5432/hyvrmshj
 	spring.datasource.driver-class-name=com.ibm.db2.jcc.DB2Driver
 	spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.DB2Dialect
 	spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
@@ -712,28 +811,42 @@ To connect to services our Spring Boot application will need connection informat
 	spring.jpa.open-in-view=false
 	#^^^suppresses warning exception related to OSIV https://vladmihalcea.com/the-open-session-in-view-anti-pattern/
 	```
-	
-1. Lastly run the build again to send the updated docker image to the container registry:
 
-```
-./mvnw package docker:build -Ddocker.username=iamapikey -Ddocker.password=<your api-key> docker:push 
-```
-
-### Redeploy the Application to Kubernetes
-
-1. We will now want to update the deployment description on our Kubernetes cluster with the `deployment.yaml` with the deployment file we just created. 
+2. Update the deployment.yml file with the following under `containers`
 
 	```
-	kubectl apply -f deployment.yaml
+	        args: ["--spring.datasource.username=$(db-username)","--spring.datasource.password=$(db-password)","--spring.datasource.url=$(db-jdbcurl)"]
+	        env:
+	        - name: db-username
+	          valueFrom:
+	            secretKeyRef:
+	              name: db2-connection-info
+	              key: username
+	        - name: db-password
+	          valueFrom:
+	            secretKeyRef:
+	              name: db2-connection-info
+	              key: password
+	        - name: db-jdbcurl
+	          valueFrom:
+	            secretKeyRef:
+	              name: db2-connection-info
+	              key: jdbcurl
+	```  
+
+---
+**Tip:** See [here](deploymentFiles/2-deployment.yml) for a completed deployment.yml file with the above added.
+
+---
+
+2. Commit and push your changes to your repo:
+
 	```
-	
-	You should get a response back that looks something like this:
-	
+	git add .
+	git commit -m "Added hello world url"
+	git push
 	```
-	deployment.extensions/storm-tracker configured
-	```
-	
-	Wait about 30 seconds while the application starts up and connects to the database. After waiting run a **curl** command, or go by browser to the your application: curl **http://\<node-ip\>:\<node-port\>/api/v1/storms**. Instructions on how to look up your node-ip and node-port can be found in the [previous exercise](https://github.com/wkorando/spring-boot-cloud-native-workshop/tree/1-deploying-spring-boot#deploy-to-kubernetes). You should get a JSON return that looks like this:
+3. Once the pipeline has completed run a **curl** command, or go by browser to the your application: `curl http://\<node-ip\>:\<node-port\>/api/v1/storms`. Instructions on how to look up your node-ip and node-port can be found in the [previous section](#test-the-application). You should get a JSON return that looks like this:
 	
 	```json
 	[  
@@ -756,7 +869,7 @@ To connect to services our Spring Boot application will need connection informat
 	      "intensity":4
 	   }
 	]
-	```
+```
 
 ## Cloud-Native Integration Testing
 

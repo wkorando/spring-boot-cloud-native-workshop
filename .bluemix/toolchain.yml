@@ -52,6 +52,6 @@ form:
   pipeline:
     parameters:
       app-name: storm-tracker
-      prod-cluster-namespace: prod
+      prod-cluster-namespace: default
     schema:
       $ref: deploy.json
