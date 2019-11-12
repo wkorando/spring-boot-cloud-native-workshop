@@ -869,7 +869,7 @@ To connect to services our Spring Boot application will need connection informat
 	      "intensity":4
 	   }
 	]
-```
+	```
 
 ## Cloud-Native Integration Testing
 
