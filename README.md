@@ -32,6 +32,7 @@ This workshop requires several tools to be available on your system before begin
 * [Docker](https://www.docker.com/get-started)
 * You will need an IDE or an advanced text editor like [Notepad++](https://notepad-plus-plus.org/) or [TextMate](https://macromates.com/)
 * [git](https://git-scm.com/downloads)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
 ### Windows Users
 
