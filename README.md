@@ -44,7 +44,7 @@ This workshop makes heavy use of terminal commands. The terminal command example
 
 During this workshop we will deploy a live application to IBM Cloud and will be making use of services and tools hosted on IBM Cloud. This workshop also requires an "upgraded" IBM Cloud account. This section will walk you through creating an IBM Cloud account and upgrading it:
 
-1. [Create an IBM Cloud account by filling out this form](https://ibm.biz/BdzCAu)
+1. [Create an IBM Cloud account by filling out this form](https://ibm.biz/BdzJmC)
 2. Once you have completed the sign up process and are signed into your IBM Cloud account on https://cloud.ibm.com expand the **Manage** menu and select **Account**
 
 	![](images/promo-code-1.png)
@@ -53,6 +53,7 @@ During this workshop we will deploy a live application to IBM Cloud and will be 
 	![](images/promo-code-2.png)
 	
 4. Use the provided url to enter a promo code for you account. 	
+
 ### Configure IBM Cloud CLI
 
 IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction with IBM Cloud. In this workshop we will be making heavy use out of the IBM Cloud CLI to carry out commands. We will need to walk through a few steps however to make sure the CLI is configured correctly for this workshop.
@@ -505,7 +506,13 @@ spring-boot-workshop   bn41o1pd0eec78gq93rg   running   11 minutes ago   1      
 	git push
 	```
 
-3. Committing changes to the repo will starts the deployment pipeline process, to view its process click this link **NEED LINK**
+3. Committing changes to the repo will starts the deployment pipeline process, to view its progress [click this link](https://cloud.ibm.com/devops/toolchains?env_id=ibm%3Ayp%3Aus-south) and clicking on the Delivery Pipeline icon:
+
+	![](images/view-pipeline-1.png)
+
+4. Once every step in the build pipeline is complete continue on to the next section (this may take a couple of minutes)
+
+	![](images/view-pipeline-2.png)
 
 #### Configure Kubectl
 
@@ -873,7 +880,11 @@ To connect to services our Spring Boot application will need connection informat
 
 ## Cloud-Native Integration Testing
 
-In this section we will look at some new tools for handling the intergration testing needs of Cloud Native applications. A key to going fast in the modern world is having fast, portable, reliable integration tests. 
+With the move to the cloud, comes a change in how to best approach automated testing. In this first section we created a deployment pipeline. When we commit a change to a repo we want this to start a process that will lead to a new version of an application be deployed to production. However for this to work we have to have a reliable suite of automated tests running to give us confidence we are not going to be pushing a bug to production. 
+
+An area within automated testing that has always been difficult to make reliable and portable was integration testing. Writing tests that depend on remote systems can run into issues of flakiness. A test could fail because the remote system was down at the time the test was run, test data had gone missing, or the remote system could be under a lot of load which either slows down a tests execution or leads to a timeout. These issues lead automated tests not being taken seriously. Tests failures might be ignored or might be turned off altogether because they take too long to execute or frequently give false negatives. 
+
+In this section we will look at a couple of tools; [TestContainers](https://www.testcontainers.org/) and [Spring Cloud Contract](https://spring.io/projects/spring-cloud-contract) that can help make integration tests more reliable and portable. 
 
 ### Services Integration Testing with TestContainers
 
@@ -886,8 +897,8 @@ In this section we will look at some new tools for handling the intergration tes
 	</dependency>
 	<dependency>
 		<groupId>org.testcontainers</groupId>
-		<artifactId>postgresql</artifactId>
-		<version>1.10.6</version>
+    	<artifactId>db2</artifactId>
+   		<version>1.12.3</version>
 	</dependency>
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
@@ -916,7 +927,7 @@ In this section we will look at some new tools for handling the intergration tes
 	@ContextConfiguration(classes = { StormTrackerApplication.class }, initializers = StormRepoTest.Initializer.class)
 	@TestMethodOrder(OrderAnnotation.class)
 	public class StormRepoTest {
-		private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>();
+		private static Db2Container <?> db2 = new Db2Container <>();
 	
 		static {
 	        postgres.start();
@@ -925,13 +936,13 @@ In this section we will look at some new tools for handling the intergration tes
 		public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 			@Override
 			public void initialize(ConfigurableApplicationContext applicationContext) {
-				TestPropertyValues.of("spring.datasource.url=" + postgres.getJdbcUrl(), //
-						"spring.datasource.username=" + postgres.getUsername(), //
-						"spring.datasource.password=" + postgres.getPassword(),
+				TestPropertyValues.of("spring.datasource.url=" + db2.getJdbcUrl(), //
+						"spring.datasource.username=" + db2.getUsername(), //
+						"spring.datasource.password=" + db2.getPassword(),
 						"spring.datasource.initialization-mode=ALWAYS",
 						"spring.datasource.data=classpath:data.sql",
 						"spring.datasource.schema=classpath:schema.sql",
-						"spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL95Dialect") //
+						"spring.jpa.database-platform=com.ibm.db2.jcc.DB2Driver") //
 						.applyTo(applicationContext);
 			}
 		}
@@ -965,7 +976,7 @@ In this section we will look at some new tools for handling the intergration tes
 	```
 1. Execute the test from the command line by running `mvn test`
 
-In the above test class the tool [TestContainers](https://www.testcontainers.org) is setting up and tearing down a PostgreSQL docker container. By using a local database issues that could cause tests to fail like data missing or network connectivity are reduced. By using a Docker container developers don't have to locally install, configure, and administer a database, making these tests portable.
+In the above test class the tool [TestContainers](https://www.testcontainers.org) is setting up and tearing down a DB2 docker container. By using a local database issues that could cause tests to fail like data missing or network connectivity are reduced. By using a Docker container developers don't have to locally install, configure, and administer a database, making these tests portable.
 
 ### API Testing With Spring Cloud Contract
 
