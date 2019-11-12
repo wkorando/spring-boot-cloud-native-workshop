@@ -633,6 +633,7 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-data-jpa</artifactId>
 	</dependency>
+	<dependency>
 	<groupId>com.ibm.db2.jcc</groupId>
 		<artifactId>db2jcc</artifactId>
 		<version>db2jcc4</version>
