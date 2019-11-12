@@ -19,23 +19,6 @@ spec:
       containers:
       - image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
         name: storm-tracker
-        args: ["--spring.datasource.username=$(db-username)","--spring.datasource.password=$(db-password)","--spring.datasource.url=$(db-jdbcurl)"]
-        env:
-        - name: db-username
-          valueFrom:
-            secretKeyRef:
-              name: db2-connection-info
-              key: username
-        - name: db-password
-          valueFrom:
-            secretKeyRef:
-              name: db2-connection-info
-              key: password
-        - name: db-jdbcurl
-          valueFrom:
-            secretKeyRef:
-              name: db2-connection-info
-              key: jdbcurl
       terminationGracePeriodSeconds: 30
 ---
 kind: Service
