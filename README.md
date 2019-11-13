@@ -283,7 +283,7 @@ As a part of the process of creating the toolchain IBM Cloud has automatically c
 	![](images/git-token-4.png)	
 
 	
-5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the git repo url
+5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the **https git repo url**
 6. In your terminal window, navigate to a folder where you'd like to have this repo located. Once there run the following command:
 
 	```
