@@ -32,6 +32,7 @@ This workshop requires several tools to be available on your system before begin
 * [Docker](https://www.docker.com/get-started)
 * You will need an IDE or an advanced text editor like [Notepad++](https://notepad-plus-plus.org/) or [TextMate](https://macromates.com/)
 * [git](https://git-scm.com/downloads)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
 ### Windows Users
 
@@ -80,6 +81,18 @@ IBM provides the powerful IBM Cloud Command Line Interface (CLI) for interaction
 	ibmcloud login 
 	```
    **Note:** If you are using a federated IBM Cloud account [follow these steps](https://cloud.ibm.com/docs/iam?topic=iam-federated_id#federated_id).
+
+5. Run this command to set org and space
+	
+	```
+	ibmcloud target --cf
+	```
+
+6. Run this command to set group
+	
+	```
+	ibmcloud target -g Default
+	```
 
 5. View the current target region with the following:
 
@@ -270,7 +283,7 @@ As a part of the process of creating the toolchain IBM Cloud has automatically c
 	![](images/git-token-4.png)	
 
 	
-5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the git repo url
+5. On the main repo page in the top right hand corner click the blue **Clone** button and copy the **https git repo url**
 6. In your terminal window, navigate to a folder where you'd like to have this repo located. Once there run the following command:
 
 	```
@@ -620,6 +633,7 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-data-jpa</artifactId>
 	</dependency>
+	<dependency>
 	<groupId>com.ibm.db2.jcc</groupId>
 		<artifactId>db2jcc</artifactId>
 		<version>db2jcc4</version>
@@ -629,6 +643,14 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 4. Create a class called `Storm` under `com.ibm.developer.stormtracker`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import javax.persistence.Entity;
+	import javax.persistence.GeneratedValue;
+	import javax.persistence.Id;
+	import javax.persistence.SequenceGenerator;
+	import javax.persistence.Table;
+
 	@Entity
 	@Table(name = "storms")
 	public class Storm {
@@ -690,6 +712,10 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 5. Create a repository interface `StormRepo` under `com.ibm.developer.stormtracker`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import org.springframework.data.repository.CrudRepository;
+
 	public interface StormRepo extends CrudRepository<Storm, Long> {
 		public Iterable<Storm> findByStartLocation(String type);
 	}
@@ -698,6 +724,20 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 6. Update `StormTrackerController`: 
 
 	```java
+	package com.ibm.developer.stormtracker;
+
+	import java.net.URI;
+
+	import org.springframework.http.ResponseEntity;
+	import org.springframework.web.bind.annotation.GetMapping;
+	import org.springframework.web.bind.annotation.PathVariable;
+	import org.springframework.web.bind.annotation.PostMapping;
+	import org.springframework.web.bind.annotation.RequestBody;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RequestParam;
+	import org.springframework.web.bind.annotation.RestController;
+	
+	
 	@RestController
 	@RequestMapping("/api/v1/storms")
 	public class StormTrackerController {
