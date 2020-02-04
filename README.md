@@ -507,8 +507,8 @@ With some initial knowledge of how Kubernetes works gained, let's see it in acti
 	
 	```
 	OK
-Name                   ID                     State     Created          Workers   Location   Version       Resource Group Name   Provider   
-spring-boot-workshop   bn41o1pd0eec78gq93rg   running   11 minutes ago   1         hou02      1.14.8_1536   Default               classic  
+	Name                   ID                     State     Created          Workers   Location   Version       Resource Group Name   Provider   
+	spring-boot-workshop   bn41o1pd0eec78gq93rg   running   11 minutes ago   1         hou02      1.14.8_1536   Default               classic  
 	```
 	
 2. Commit and push your changes to your repo:
