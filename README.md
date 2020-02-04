@@ -768,7 +768,7 @@ Spring Data is a popular library within the Spring Framework ecosystem. Using th
 
 ### Using Kubernetes Secrets to Connect to a Service
 
-To connect to services our Spring Boot application will need connection information like username and password. Storing this information directly in `application.properties` files iss insecure and inconvenient. Kubernetes can securely store sensitive connection information like usernames and passwords in Kubernetes Secrets. You can then configure Kubernetes to supply these values when an application needs them. Let's configure Kubernetes to store the username and password to our new database in a secret: 
+To connect to services our Spring Boot application will need connection information like username and password. Storing this information directly in `application.properties` files is insecure and inconvenient. Kubernetes can securely store sensitive connection information like usernames and passwords in Kubernetes Secrets. You can then configure Kubernetes to supply these values when an application needs them. Let's configure Kubernetes to store the username and password to our new database in a secret: 
 
 
 1. Open your terminal and run the following commandto create service credentials for connecting to the database we created at the start of this section:
