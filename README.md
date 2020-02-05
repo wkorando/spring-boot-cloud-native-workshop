@@ -624,7 +624,7 @@ ibmcloud resource service-instance-create spring-boot-db2 dashdb-for-transaction
 
 ### Handling the CRUD with Spring Data 
 
-Spring Data is a popular library within the Spring Framework ecosystem. Using the Repostiroy pattern within Spring Data you can easily configure an application so that it is communicating with a database in mere minutes. We will be using Spring Data in this section to handle the database with the database we just created.  
+Spring Data is a popular library within the Spring Framework ecosystem. Using the Repository pattern within Spring Data you can easily configure an application so that it is communicating with a database in mere minutes. We will be using Spring Data in this section to handle the database with the database we just created.  
 
 1. Open your **pom.xml** update it adding these dependencies:
 
